@@ -1,0 +1,11 @@
+App\Entity\User:
+  # https://github.com/hautelook/AliceBundle/issues/437 - password encoding
+  admin:
+    username: 'admin'
+    password: <encodePassword(@admin, 'admin')>
+    roles: ['ROLE_ADMIN']
+
+  customer_{1..10}:
+    username: '<username()>'
+    password: 'notset'
+    roles: ['ROLE_CUSTOMER']
