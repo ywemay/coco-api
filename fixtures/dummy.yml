@@ -3,9 +3,84 @@ App\Entity\User:
   admin:
     username: 'admin'
     password: <encodePassword(@admin, 'admin')>
+    enabled: true
     roles: ['ROLE_ADMIN']
 
-  customer_{1..10}:
-    username: '<username()>'
-    password: 'notset'
+  teamleader{1..2}:
+    username (unique): '<username()>'
+    password: 'nothing usefull'
+    enabled: false
+    roles: ['ROLE_TEAMLEADER']
+
+  worker_{1..10}:
+    username (unique): '<username()>'
+    password: 'no password available'
+    enabled: true
+    roles: ['ROLE_WORKER']
+
+  customer_apple:
+    username: 'apple'
+    password: <encodePassword(@customer_apple, 'apple')
+    enabled: false
     roles: ['ROLE_CUSTOMER']
+
+  cusotmer_orange:
+    username: 'orange'
+    password: <encodePassword(@cusotmer_orange, 'orange')
+    enabled: true
+    roles: ['ROLE_CUSTOMER']
+
+  customer_{1..10}:
+    username (unique): '<username()>'
+    password: 'notest'
+    enabled: true
+    roles: ['ROLE_CUSTOMER']
+
+App\Entity\Company:
+
+  company{1..20}:
+    name: <company()>
+    owner: '@customer_*'
+
+  company_apple:
+    name: 'Comapny Apple'
+    owner: '@customer_apple'
+
+  company_aple_red:
+    name: 'Company Aplle Red'
+    owner: '@customer_apple'
+
+  company_orange:
+    name: 'Company Orange'
+    owner: '@cusotmer_orange'
+
+App\Entity\SaleOrder:
+
+  sale_order_apple{1..5}:
+    date: <dateTime('now')>
+    company: '@company_apple'
+
+  sale_order_apple_red{1..3}:
+    date: <dateTime('now')>
+    company: '@company_apple_red'
+
+  sale_order_orange{1..4}:
+    date: <dateTime('now')>
+    company: '@company_orange'
+
+App\Entity\SaleOrderItem:
+
+  so_item_apple{1..10}:
+    saleOrder: '@sale_order_apple*'
+    startDateTime: <dateTime('now')>
+    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+
+  so_item_apple_red{1..10}:
+    saleOrder: '@sale_order_apple_red*'
+    startDateTime: <dateTime('now')>
+    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+
+  so_item_orange{1..6}:
+    saleOrder: '@sale_order_orange*'
+    startDateTime: <dateTime('now')>
+    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>

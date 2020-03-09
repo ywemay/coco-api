@@ -47,9 +47,11 @@ See: [LexikJWTAuthenticationBundle](https://github.com/lexik/LexikJWTAuthenticat
     symfony server:start
 ```
 
-## Load fixtures
+## Fixtures
 
-Write fixtures files in the fixtures/ folder.
+Fixtures feature populates database with demo/test data.
+See fixtures/dummy.yml for default declared records.
+One may append his own fixture files in the fixtures/ folder.
 
 ```bash
   php bin/console hautelook:fixtures:load
