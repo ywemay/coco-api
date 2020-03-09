@@ -6,11 +6,23 @@ App\Entity\User:
     enabled: true
     roles: ['ROLE_ADMIN']
 
+  teamleader_vasea:
+    username: 'vasea'
+    password: <encodePassword(@teamleader_vasea, 'vasea')>
+    enabled: true
+    roles: ['ROLE_TEAMLEADER']
+
   teamleader{1..2}:
     username (unique): '<username()>'
     password: 'nothing usefull'
     enabled: false
     roles: ['ROLE_TEAMLEADER']
+
+  worker_pekya:
+    username: 'pekya'
+    password: <encodePassword(@worker_pekya, 'pekya')>
+    enabled: true
+    roles: ['ROLE_WORKER']
 
   worker_{1..10}:
     username (unique): '<username()>'
@@ -20,13 +32,13 @@ App\Entity\User:
 
   customer_apple:
     username: 'apple'
-    password: <encodePassword(@customer_apple, 'apple')
+    password: <encodePassword(@customer_apple, 'apple')>
     enabled: false
     roles: ['ROLE_CUSTOMER']
 
   cusotmer_orange:
     username: 'orange'
-    password: <encodePassword(@cusotmer_orange, 'orange')
+    password: <encodePassword(@cusotmer_orange, 'orange')>
     enabled: true
     roles: ['ROLE_CUSTOMER']
 
@@ -46,7 +58,7 @@ App\Entity\Company:
     name: 'Comapny Apple'
     owner: '@customer_apple'
 
-  company_aple_red:
+  company_apple_red:
     name: 'Company Aplle Red'
     owner: '@customer_apple'
 
