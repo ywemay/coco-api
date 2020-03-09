@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\Country;
+use App\Entity\Company;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
- * @method Country|null find($id, $lockMode = null, $lockVersion = null)
- * @method Country|null findOneBy(array $criteria, array $orderBy = null)
- * @method Country[]    findAll()
- * @method Country[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Company|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Company|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Company[]    findAll()
+ * @method Company[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CountryRepository extends ServiceEntityRepository
+class CompanyRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Country::class);
+        parent::__construct($registry, Company::class);
     }
 
     // /**
-    //  * @return Country[] Returns an array of Country objects
+    //  * @return Company[] Returns an array of Company objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class CountryRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Country
+    public function findOneBySomeField($value): ?Company
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.exampleField = :val')
