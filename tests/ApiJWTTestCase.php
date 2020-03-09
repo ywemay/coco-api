@@ -1,11 +1,11 @@
 <?php
 namespace App\Tests;
 
-// use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase;
+// use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 
-class ApiJWTTestCase extends WebTestCase//ApiTestCase
+class ApiJWTTestCase extends ApiTestCase
 {
     // This trait provided by HautelookAliceBundle will take care of refreshing the database content to a known state before each test
     use RefreshDatabaseTrait;

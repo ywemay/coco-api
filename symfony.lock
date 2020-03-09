@@ -294,6 +294,9 @@
     "symfony/css-selector": {
         "version": "v5.0.5"
     },
+    "symfony/debug": {
+        "version": "v4.4.5"
+    },
     "symfony/dependency-injection": {
         "version": "v5.0.3"
     },
