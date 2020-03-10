@@ -25,19 +25,14 @@ class UsersTest extends ApiJWTTestCase
       $token = $this->getToken();
       $client = static::createClient([],
         [
-          //'auth_bearer' => $token,
+          'auth_bearer' => $token,
           'headers' => [
-            'Authorization' => 'Bearer ' . $token,
-            'accept' => 'application/ld+json',
-            'content-type' => 'application/json'
-          ],
-          'query' => [
-            'token' => $token
+            'accept' => 'application/ld+json'
           ]
         ]
       );
       $response = $client->request('GET', '/api/users');
-      $this->assertSame(200, $response->getStatusCode());
+      $this->assertResponseIsSuccessful();
     }
 
     public function testLogin(): void
