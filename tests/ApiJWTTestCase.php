@@ -17,6 +17,12 @@ class ApiJWTTestCase extends ApiTestCase
 
     public function getToken($credentials = []): string
     {
+      if (is_string($credentials)) {
+        $credentials = [
+          'username' => $credentials,
+          'password' => $credentials
+        ];
+      }
       if (!$credentials) $credentials = $this->credentials;
       $response = static::createClient()->request('POST', '/api/auth/login',
       ['json' => $credentials ]);

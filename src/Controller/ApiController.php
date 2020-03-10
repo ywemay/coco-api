@@ -61,65 +61,91 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/register", name="api_auth_register",  methods={"POST"})
      * @param Request $request
      * @param UserManagerInterface $userManager
      * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function register(Request $request, ValidatorInterface $validator)
+    public function register($roles = [], $data = false, Request $request, ValidatorInterface $validator)
     {
+      if (!$data) {
         $data = json_decode(
-            $request->getContent(),
-            true
+          $request->getContent(),
+          true
         );
+      }
 
-        if (empty($data)) {
-            return new JsonResponse(["error" => 'Data expected'], 500);
-        }
-        elseif (!isset($data['username'])) {
-            return new JsonResponse(["error" => 'Username expected'], 500);
-        }
-        elseif (strlen($data['username']) < 5 ) {
-            return new JsonResponse(["error" => 'Username shall be 5 or more characters in length'], 500);
-        }
-        elseif (!isset($data['password'])) {
-            return new JsonResponse(["error" => 'Password expected'], 500);
-        }
-        elseif (strlen($data['password']) < 5 ) {
-            return new JsonResponse(["error" => 'Password shall be 5 or more characters in length'], 500);
-        }
+      if (empty($data)) {
+          return new JsonResponse(["error" => 'Data expected'], 500);
+      }
+      elseif (!isset($data['username'])) {
+          return new JsonResponse(["error" => 'Username expected'], 500);
+      }
+      elseif (strlen($data['username']) < 5 ) {
+          return new JsonResponse(["error" => 'Username shall be 5 or more characters in length'], 500);
+      }
+      elseif (!isset($data['password'])) {
+          return new JsonResponse(["error" => 'Password expected'], 500);
+      }
+      elseif (strlen($data['password']) < 5 ) {
+          return new JsonResponse(["error" => 'Password shall be 5 or more characters in length'], 500);
+      }
 
-        $username = $data['username'];
-        $password = $data['password'];
-        // $email = $data['email'];
+      $username = $data['username'];
+      $password = $data['password'];
+      // $email = $data['email'];
 
-        $user = new User();
+      $user = new User();
 
-        $user
-            ->setUsername($username)
-            ->setRoles(['ROLE_USER'])
-        ;
-        $user->setPassword($this->passwordEncoder->encodePassword(
-            $user,
-            $password
-        ));
+      $user
+          ->setUsername($username)
+          ->setRoles(['ROLE_USER'])
+      ;
+      $user->setPassword($this->passwordEncoder->encodePassword(
+          $user,
+          $password
+      ));
+      $user->setEnabled(false);
 
-        $errors = $validator->validate($user);
-        if(count($errors) > 0) {
-            $error = $errors->get(0);
-            return new JsonResponse([
-                "error" => $error->getMessage(),
-                'code' => $error->getCode()
-            ], 500);
-        }
+      $errors = $validator->validate($user);
+      if(count($errors) > 0) {
+          $error = $errors->get(0);
+          return new JsonResponse([
+              "error" => $error->getMessage(),
+              'code' => $error->getCode()
+          ], 500);
+      }
 
-        try {
-            $this->manager->persist($user);
-            $this->manager->flush();
-        } catch (\Exception $e) {
-            return new JsonResponse(["error" => $e->getMessage()], 500);
-        }
+      try {
+          $this->manager->persist($user);
+          $this->manager->flush();
+      } catch (\Exception $e) {
+          return new JsonResponse(["error" => $e->getMessage()], 500);
+      }
 
-        return new JsonResponse(["success" => $user->getUsername(). " has been registered!"], 200);
+      return new JsonResponse(["success" => $user->getUsername(). " has been registered!"], 201);
+    }
+
+    /**
+     * @Route("/register/worker", name="api_auth_register_worker",  methods={"POST"})
+     */
+    public function registerWorker(Request $request, ValidatorInterface $validator)
+    {
+        return $this->register(['ROLE_WORKER'], false, $request, $validator);
+    }
+
+    /**
+     * @Route("/register/teamleader", name="api_auth_register_teamleader",  methods={"POST"})
+     */
+    public function registerTeamLeader(Request $request, ValidatorInterface $validator)
+    {
+        return $this->register(['ROLE_TEAMLEADER'], false, $request, $validator);
+    }
+
+    /**
+     * @Route("/register/customer", name="api_auth_register_customer",  methods={"POST"})
+     */
+    public function registerCustomer(Request $request, ValidatorInterface $validator)
+    {
+        return $this->register(['ROLE_CUSTOMER'], false, $request, $validator);
     }
 }

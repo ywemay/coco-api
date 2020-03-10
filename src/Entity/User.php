@@ -26,16 +26,22 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *      "pagination_items_per_page"=30
  *     },
  *     collectionOperations={
- *         "get",
+ *         "get"={
+ *          "security"=>"is_granted('ROLE_ADMIN') or is_granted('ROLE_TEAMLEADER')"
+ *         },
  *         "post"={
  *            "security"="is_granted('ROLE_ADMIN')",
  *            "validation_groups"={"Default", "create"}
  *          }
  *     },
  *     itemOperations={
- *         "get",
- *         "put"={"access_control"="is_granted('ROLE_USER') and object == user"},
- *         "delete"={"access_control"="is_granted('ROLE_ADMIN')"}
+ *         "get"={
+ *          "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and object=user)"
+ *         },
+ *         "put"={
+ *          "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and object=user)"
+ *         },
+ *         "delete"={"security"="is_granted('ROLE_ADMIN')"}
  *     }
  * )
  * @ApiFilter(PropertyFilter::class)
@@ -59,6 +65,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
+     * @Groups({"user:write", "user:read"})
      */
     private $roles = [];
 
@@ -82,6 +89,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"user:write", "user:read"})
      */
     private $enabled;
 
