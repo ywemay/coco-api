@@ -1,0 +1,40 @@
+#!/bin/bash
+ENVFILE=".env.local"
+
+for ((i=1;i<=$#;i++));
+do
+
+    if [ ${!i} = "--env" ]
+    then ((i++))
+        ENVFILE=".env.${!i}";
+        ENVKEY=".${!i}";
+
+    fi
+done;
+
+if [ ! -f "$ENVFILE" ]
+then
+  if [[ $ENVFILE == ".env.local" && -f ".env" ]]
+  then
+    ENVFILE=".env"
+  else
+    echo "Cannot find file ${ENVFILE}..."
+    exit
+  fi
+fi
+
+if [[ $ENVFILE == ".env.local" || $ENVFILE == ".env" ]]
+then
+  ENVKEY=""
+fi
+
+outputDir="config/jwt"
+privateKeyFile="${outputDir}/private${ENVKEY}.pem"
+publicKeyFile="${outputDir}/public${ENVKEY}.pem"
+
+echo "Generating private (${privateKeyFile}) and public (${publicKeyFile}) keys."
+
+mkdir -p $outputDir
+jwt_passphrase=$(grep ''^JWT_PASSPHRASE='' $ENVFILE | cut -f 2 -d ''='')
+echo "$jwt_passphrase" | openssl genpkey -out $privateKeyFile -pass stdin -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096
+echo "$jwt_passphrase" | openssl pkey -in $privateKeyFile -passin stdin -out $publicKeyFile -pubout
