@@ -32,13 +32,8 @@ class UserAdminTest extends ApiJWTTestCase
       $this->assertResponseStatusCodeSame(201);
       $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
 
-      $this->assertJsonContains([
-        '@context' => '/contexts/User',
-        '@type' => 'User',
-        'username' => 'testuser',
-        'enabled' => true
-      ]);
       $this->assertMatchesResourceItemJsonSchema(User::class);
+      $this->assertSame('testuser', $response->toArray()['username']);
     }
 
     public function testCreateInvalidUser(): void
@@ -74,14 +69,11 @@ class UserAdminTest extends ApiJWTTestCase
 
       $iri = static::findIriBy(User::class, ['username' => 'vasea']);
 
-      $client->request('PUT', $iri, ['json' => [
+      $response = $client->request('PUT', $iri, ['json' => [
         'password' => 'vasea'
         ]]);
       $this->assertResponseIsSuccessful();
-      $this->assertJsonContains([
-        '@id' => $iri,
-        'username' => 'vasea'
-      ]);
+      $this->assertMatchesResourceCollectionJsonSchema(User::class);
     }
 
     public function testDeleteUser(): void

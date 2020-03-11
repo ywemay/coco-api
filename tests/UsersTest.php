@@ -78,4 +78,17 @@ class UsersTest extends ApiJWTTestCase
       ]]);
       $this->assertResponseStatusCodeSame(201);
     }
+
+    public function testTeamLeaderList(): void
+    {
+      $token = $this->getToken('vasea');
+      $client = static::createClient([], [
+        'auth_bearer' => $token,
+        'headers' => [
+          'accept' => 'application/ld+json'
+      ]]);
+
+      $response = $client->request('GET', '/api/users');
+      $this->assertResponseStatusCodeSame(20  0);
+    }
 }

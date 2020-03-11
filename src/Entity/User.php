@@ -27,7 +27,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *     },
  *     collectionOperations={
  *         "get"={
- *          "security"=>"is_granted('ROLE_ADMIN') or is_granted('ROLE_TEAMLEADER')"
+ *          "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_TEAMLEADER')"
  *         },
  *         "post"={
  *            "security"="is_granted('ROLE_ADMIN')",
@@ -36,10 +36,10 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *     },
  *     itemOperations={
  *         "get"={
- *          "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and object=user)"
+ *          "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and (object.id == user.id))"
  *         },
  *         "put"={
- *          "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and object=user)"
+ *          "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and (object.id == user.id))"
  *         },
  *         "delete"={"security"="is_granted('ROLE_ADMIN')"}
  *     }
