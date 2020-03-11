@@ -20,7 +20,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  * @UniqueEntity("username")
  * @ApiResource(
  *   normalizationContext={"groups"={"user:read"}},
- *   denormalizationContext={"groups"={"user:write", "register"}},
+ *   denormalizationContext={"groups"={"user:write"}},
  *     attributes={
  *      "security"="is_granted('ROLE_ADMIN')",
  *      "pagination_items_per_page"=30
@@ -32,14 +32,21 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *         "post"={
  *            "security"="is_granted('ROLE_ADMIN')",
  *            "validation_groups"={"Default", "create"}
+ *          },
+ *          "regcustomer"={
+ *            "path"="/register/customer",
+ *            "method"="POST",
+ *            "validation_groups"={"regcustomer"},
+ *            "denormalization_context"={"groups"={"user:regcustomer"}},
+ *            "normalization_context"={"groups"={"user:regcustomer"}}
  *          }
  *     },
  *     itemOperations={
  *         "get"={
- *          "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and (object.id == user.id))"
+ *          "security"="is_granted('ROLE_ADMIN')"
  *         },
  *         "put"={
- *          "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and (object.id == user.id))"
+ *          "security"="is_granted('ROLE_ADMIN')"
  *         },
  *         "delete"={"security"="is_granted('ROLE_ADMIN')"}
  *     }
@@ -59,7 +66,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank()
-     * @Groups({"user:write", "user:read", "register"})
+     * @Groups({"user:write", "user:read", "user:regcustomer"})
      */
     private $username;
 
@@ -171,6 +178,9 @@ class User implements UserInterface
       return (string) $this->plainPassword;
     }
 
+    /**
+     * @Groups({"user:regcustomer"})
+     */
     public function setPlainPassword(string $plainPassword): self
     {
         $this->plainPassword = $plainPassword;
