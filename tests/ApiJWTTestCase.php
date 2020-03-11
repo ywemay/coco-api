@@ -35,4 +35,16 @@ class ApiJWTTestCase extends ApiTestCase
 
       return FALSE;
     }
+
+    public function getAuthenticatedClient($credentials = []) {
+      $token = $this->getToken($credentials);
+
+      $client = static::createClient([], [
+        'auth_bearer' => $token,
+        'headers' => [
+          'accept' => 'application/ld+json'
+      ]]);
+
+      return $client;
+    }
 }

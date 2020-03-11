@@ -35,17 +35,24 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
           if ($this->security->isGranted('ROLE_ADMIN') || null === $user = $this->security->getUser()) {
             return;
           }
+          $this->addUserRelatedWhere($queryBuilder);
+        }
+
+        return;
+    }
+
+    private function addUserRelatedWhere(QueryBuilder $queryBuilder): void
+    {
           $rootAlias = $queryBuilder->getRootAliases()[0];
           if ($this->security->isGranted('ROLE_TEAMLEADER')) {
-            $queryBuilder->andWhere(sprintf('JSON_CONTAINS(%s.roles, :roles)', $rootAlias));
-            $queryBuilder->setParameter('roles', '["ROLE_WORKER", "ROLE_TEAMLEADER"]');
+            $queryBuilder->andWhere(sprintf('%s.roles LIKE :role1', $rootAlias));
+            $queryBuilder->andWhere(sprintf('%s.roles LIKE :role2', $rootAlias));
+            $queryBuilder->setParameter('role1', '%"ROLE_WORKER"%');
+            $queryBuilder->setParameter('role2', '%"ROLE_WORKER"%');
           }
           else {
             $queryBuilder->andWhere(sprintf('%s.id = :id', $rootAlias));
             $queryBuilder->setParameter('id', $user->getId());
           }
-        }
-
-        return;
     }
 }

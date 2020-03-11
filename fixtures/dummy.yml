@@ -24,7 +24,13 @@ App\Entity\User:
     enabled: true
     roles: ['ROLE_WORKER']
 
-  worker_{1..10}:
+  worker_mihai:
+    username: 'mihai'
+    password: <encodePassword(@worker_mihai, 'mihai')>
+    enabled: false
+    roles: ['ROLE_WORKER']
+
+  worker_{1..9}:
     username (unique): '<username()>'
     password: 'no password available'
     enabled: true
