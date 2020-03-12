@@ -39,6 +39,20 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *            "validation_groups"={"regcustomer"},
  *            "denormalization_context"={"groups"={"user:regcustomer"}},
  *            "normalization_context"={"groups"={"user:regcustomer"}}
+ *          },
+ *          "regteamleader"={
+ *            "path"="/register/teamleader",
+ *            "method"="POST",
+ *            "validation_groups"={"regteamleader"},
+ *            "denormalization_context"={"groups"={"user:regteamleader"}},
+ *            "normalization_context"={"groups"={"user:regteamleader"}}
+ *          },
+ *          "regworker"={
+ *            "path"="/register/worker",
+ *            "method"="POST",
+ *            "validation_groups"={"regworker"},
+ *            "denormalization_context"={"groups"={"user:regworker"}},
+ *            "normalization_context"={"groups"={"user:regworker"}}
  *          }
  *     },
  *     itemOperations={
@@ -66,7 +80,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank()
-     * @Groups({"user:write", "user:read", "user:regcustomer"})
+     * @Groups({"user:write", "user:read", "user:regcustomer", "user:regteamleader", "user:regworker"})
      */
     private $username;
 
@@ -179,7 +193,7 @@ class User implements UserInterface
     }
 
     /**
-     * @Groups({"user:regcustomer"})
+     * @Groups({"user:write", "user:regcustomer", "user:regteamleader", "user:regworker"})
      */
     public function setPlainPassword(string $plainPassword): self
     {
