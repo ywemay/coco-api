@@ -47,4 +47,16 @@ class ApiJWTTestCase extends ApiTestCase
 
       return $client;
     }
+
+    public function userRequest($username, $iri, $method='GET')
+    {
+      $client = $this->getAuthenticatedClient($username);
+      return $client->request($method, $iri);
+    }
+
+    public function iriToId($iri)
+    {
+      $parts = explode("/", $iri);
+      return end($parts);
+    }
 }
