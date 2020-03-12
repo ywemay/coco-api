@@ -1,5 +1,7 @@
 {
     "type": "project",
+    "name": "Coco Continaers",
+    "description": "Backend for containers load business",
     "license": "proprietary",
     "require": {
         "php": "^7.2.5",
