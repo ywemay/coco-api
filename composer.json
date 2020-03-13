@@ -1,6 +1,6 @@
 {
     "type": "project",
-    "name": "Coco Continaers",
+    "name": "ywemay/coco-api",
     "description": "Backend for containers load business",
     "license": "proprietary",
     "require": {

@@ -3,10 +3,39 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *   normalizationContext={"groups"={"saleorder:read"}},
+ *   denormalizationContext={"groups"={"saleorder:write"}},
+ *   attributes={
+ *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_CUSTOMER')",
+ *     "pagination_items_per_page"=30
+ *   },
+ *   collectionOperations={
+ *     "get"={
+ *       "path"="/order_items"
+ *     },
+ *     "post"={"path"="/order_items"}
+ *   },
+ *   itemOperations={
+ *     "get"={
+ *       "path"="/order_items/{id}",
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('view', object)"
+ *     },
+ *     "put"={
+ *       "path"="/order_items/{id}",
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('edit', object)"
+ *     },
+ *     "delete"={
+ *       "path"="/order_items/{id}",
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('delete', object)"
+ *     }
+ *   }
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\SaleOrderItemRepository")
  */
 class SaleOrderItem
@@ -15,24 +44,40 @@ class SaleOrderItem
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"saleorder:read"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\SaleOrder")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"saleorder:read", "saleorder:write"})
      */
     private $saleOrder;
 
     /**
      * @ORM\Column(type="string", length=6)
+     * @Groups({"saleorder:read", "saleorder:write"})
      */
     private $containerType;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"saleorder:read", "saleorder:write"})
      */
     private $startDateTime;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"saleorder:read", "saleorder:write"})
+     */
+    private $price;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"saleorder:read", "saleorder:write"})
+     */
+    private $description;
 
     public function getId(): ?int
     {
@@ -73,5 +118,39 @@ class SaleOrderItem
         $this->startDateTime = $startDateTime;
 
         return $this;
+    }
+
+    public function getPrice(): ?int
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?int $price): self
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+      return $this->getSaleOrder()->getOwner();
+    }
+
+    public function getState(): ?int
+    {
+      return $this->getSaleOrder()->getState();
     }
 }

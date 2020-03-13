@@ -12,19 +12,21 @@ class SaleOrdersTest extends ApiJWTTestCase
 {
   use RefreshDatabaseTrait;
 
+  const IRI = '/api/orders';
+
   public function testList(): void
   {
-    $response = $this->userRequest('orange', '/api/orders');
+    $response = $this->userRequest('orange', self::IRI);
     $this->assertResponseStatusCodeSame(200);
     $this->assertSame(4, $response->toArray()['hydra:totalItems']);
 
-    $response = $this->userRequest('pekya', '/api/orders');
+    $response = $this->userRequest('pekya', self::IRI);
     $this->assertResponseStatusCodeSame(403);
 
-    $response = $this->userRequest('vasea', '/api/orders');
+    $response = $this->userRequest('vasea', self::IRI);
     $this->assertResponseStatusCodeSame(403);
 
-    $response = $this->userRequest('admin', '/api/orders');
+    $response = $this->userRequest('admin', self::IRI);
     $this->assertResponseStatusCodeSame(200);
     $this->assertSame(12, $response->toArray()['hydra:totalItems']);
   }
@@ -49,9 +51,10 @@ class SaleOrdersTest extends ApiJWTTestCase
 
   private function createOrder($username) {
     $client = $this->getAuthenticatedClient($username);
-    $response = $client->request('POST', '/api/orders',['json' => [
+    $response = $client->request('POST', self::IRI,['json' => [
       'date'=>date('Y-m-d'),
-      'company' => $this->getCompanyIri()
+      'company' => $this->getCompanyIri(),
+      'state' => 1
       ]]);
   }
 

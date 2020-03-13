@@ -65,8 +65,9 @@ class SaleOrder
     /**
      * @ORM\Column(type="smallint")
      * @Assert\Range(min = 0, max = 10)
+     * @Groups({"saleorder:read", "saleorder:write"})
      */
-    private $state;
+    private $state = 0;
 
     public function getId(): ?int
     {

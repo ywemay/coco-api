@@ -101,13 +101,19 @@ App\Entity\SaleOrderItem:
     saleOrder: '@sale_order_apple*'
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+    price: <numberBetween(100, 7000)>
+    description: <sentence()>
 
   so_item_apple_red{1..10}:
     saleOrder: '@sale_order_apple_red*'
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+    price: <numberBetween(100, 7000)>
+    description: <sentence()>
 
   so_item_orange{1..6}:
     saleOrder: '@sale_order_orange*'
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+    price: <numberBetween(100, 7000)>
+    description: <sentence()>
