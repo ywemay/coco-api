@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,11 +23,17 @@ use Doctrine\ORM\Mapping as ORM;
  *     "post"={"path"="/orders"}
  *   },
  *   itemOperations={
- *     "get"={"path"="/orders/{id}"},
- *     "put"={"path"="/orders/{id}"},
+ *     "get"={
+ *       "path"="/orders/{id}",
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('view', object)"
+ *     },
+ *     "put"={
+ *       "path"="/orders/{id}",
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('edit', object)"
+ *     },
  *     "delete"={
  *       "path"="/orders/{id}",
- *       "security"="is_granted('ROLE_ADMIN')"
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('delete', object)"
  *       }
  *   }
  * )
@@ -55,6 +62,12 @@ class SaleOrder
      */
     private $company;
 
+    /**
+     * @ORM\Column(type="smallint")
+     * @Assert\Range(min = 0, max = 10)
+     */
+    private $state;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,9 +90,28 @@ class SaleOrder
         return $this->company;
     }
 
+    public function getOwner(): ?User
+    {
+      return $this->getCompany()->getOwner();
+    }
+
     public function setCompany(?Company $company): self
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getState(): ?int
+    {
+        return $this->state;
+    }
+
+    /**
+     */
+    public function setState(int $state): self
+    {
+        $this->state = $state;
 
         return $this;
     }

@@ -48,7 +48,13 @@ App\Entity\User:
     enabled: true
     roles: ['ROLE_CUSTOMER']
 
-  customer_{1..10}:
+  cusotmer_purple:
+    username: 'purple'
+    password: <encodePassword(@cusotmer_purple, 'purple')>
+    enabled: true
+    roles: ['ROLE_CUSTOMER']
+
+  customer_{1..9}:
     username (unique): '<username()>'
     password: 'notest'
     enabled: true
@@ -77,14 +83,17 @@ App\Entity\SaleOrder:
   sale_order_apple{1..5}:
     date: <dateTime('now')>
     company: '@company_apple'
+    state: 0
 
   sale_order_apple_red{1..3}:
     date: <dateTime('now')>
     company: '@company_apple_red'
+    state: 0
 
   sale_order_orange{1..4}:
     date: <dateTime('now')>
     company: '@company_orange'
+    state: 0
 
 App\Entity\SaleOrderItem:
 
