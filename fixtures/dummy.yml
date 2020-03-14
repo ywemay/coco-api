@@ -12,7 +12,7 @@ App\Entity\User:
     enabled: true
     roles: ['ROLE_TEAMLEADER']
 
-  teamleader{1..2}:
+  teamleader_random_{1..2}:
     username (unique): '<username()>'
     password: 'nothing usefull'
     enabled: false
@@ -36,27 +36,27 @@ App\Entity\User:
     enabled: true
     roles: ['ROLE_WORKER']
 
+  customer_random_{1..9}:
+    username (unique): '<username()>'
+    password: 'notest'
+    enabled: true
+    roles: ['ROLE_CUSTOMER']
+
   customer_apple:
     username: 'apple'
     password: <encodePassword(@customer_apple, 'apple')>
     enabled: false
     roles: ['ROLE_CUSTOMER']
 
-  cusotmer_orange:
+  customer_orange:
     username: 'orange'
-    password: <encodePassword(@cusotmer_orange, 'orange')>
+    password: <encodePassword(@customer_orange, 'orange')>
     enabled: true
     roles: ['ROLE_CUSTOMER']
 
-  cusotmer_purple:
+  customer_purple:
     username: 'purple'
-    password: <encodePassword(@cusotmer_purple, 'purple')>
-    enabled: true
-    roles: ['ROLE_CUSTOMER']
-
-  customer_{1..9}:
-    username (unique): '<username()>'
-    password: 'notest'
+    password: <encodePassword(@customer_purple, 'purple')>
     enabled: true
     roles: ['ROLE_CUSTOMER']
 
@@ -64,7 +64,7 @@ App\Entity\Company:
 
   company{1..20}:
     name: <company()>
-    owner: '@customer_*'
+    owner: '@customer_random_*'
 
   company_apple:
     name: 'Comapny Apple'
@@ -76,7 +76,11 @@ App\Entity\Company:
 
   company_orange:
     name: 'Company Orange'
-    owner: '@cusotmer_orange'
+    owner: '@customer_orange'
+
+  company_purple:
+    name: 'Company Purple'
+    owner: '@customer_purple'
 
 App\Entity\SaleOrder:
 
@@ -90,9 +94,14 @@ App\Entity\SaleOrder:
     company: '@company_apple_red'
     state: 0
 
-  sale_order_orange{1..4}:
+  sale_order_orange{1..2}:
     date: <dateTime('now')>
     company: '@company_orange'
+    state: 0
+
+  sale_order_purple{1..2}:
+    date: <dateTime('now')>
+    company: '@company_purple'
     state: 0
 
 App\Entity\SaleOrderItem:
@@ -111,8 +120,22 @@ App\Entity\SaleOrderItem:
     price: <numberBetween(100, 7000)>
     description: <sentence()>
 
-  so_item_orange{1..6}:
-    saleOrder: '@sale_order_orange*'
+  so_item_orange{1..3}:
+    saleOrder: '@sale_order_orange1'
+    startDateTime: <dateTime('now')>
+    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+    price: <numberBetween(100, 7000)>
+    description: <sentence()>
+
+  so_item_orange{4..6}:
+    saleOrder: '@sale_order_orange2'
+    startDateTime: <dateTime('now')>
+    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+    price: <numberBetween(100, 7000)>
+    description: <sentence()>
+
+  so_item_purple{1..3}:
+    saleOrder: '@sale_order_purple*'
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
     price: <numberBetween(100, 7000)>

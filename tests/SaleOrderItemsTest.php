@@ -15,6 +15,8 @@ class SaleOrderItemsTest extends ApiJWTTestCase
 
   const IRI = '/api/order_items';
 
+  private $log = [];
+
   public function testList(): void
   {
     $response = $this->userRequest('orange', self::IRI);
@@ -68,20 +70,19 @@ class SaleOrderItemsTest extends ApiJWTTestCase
     $this->assertResponseStatusCodeSame(403);
     $response = $this->deleteOrderItem('vasea');
     $this->assertResponseStatusCodeSame(403);
-    $response = $this->deleteOrderItem('orange');
+    $response = $this->deleteOrderItem('purple');
     $this->assertResponseStatusCodeSame(204);
     $response = $this->deleteOrderItem('admin');
     $this->assertResponseStatusCodeSame(204);
   }
 
-  private function getCompanyIri() {
-    $iri = static::findIriBy(User::class, ['username' => 'orange']);
-    $parts = explode("/", $iri);
-    return static::findIriBy(Company::class, ['owner' => $parts[3]]);
+  private function getCompanyIri($username = 'orange') {
+    $iri = static::findIriBy(User::class, ['username' => $username]);
+    return static::findIriBy(Company::class, ['owner' => $this->iriToId($iri)]);
   }
 
-  private function getSaleOrderIri() {
-    $id = $this->iriToId($this->getCompanyIri());
+  private function getSaleOrderIri($username = 'orange') {
+    $id = $this->iriToId($this->getCompanyIri($username));
     $iri = static::findIriBy(SaleOrder::class, ['company' => $id]);
     return $iri;
   }
@@ -110,7 +111,7 @@ class SaleOrderItemsTest extends ApiJWTTestCase
 
   public function deleteOrderItem($username) {
     $client = $this->getAuthenticatedClient($username);
-    $soid = $this->iriToId($this->getSaleOrderIri());
+    $soid = $this->iriToId($this->getSaleOrderIri('purple'));
     $iri = static::findIriBy(SaleOrderItem::class, ['saleOrder' => $soid]);
     return $client->request('DELETE', $iri);
   }

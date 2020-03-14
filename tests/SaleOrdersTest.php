@@ -18,7 +18,7 @@ class SaleOrdersTest extends ApiJWTTestCase
   {
     $response = $this->userRequest('orange', self::IRI);
     $this->assertResponseStatusCodeSame(200);
-    $this->assertSame(4, $response->toArray()['hydra:totalItems']);
+    $this->assertSame(2, $response->toArray()['hydra:totalItems']);
 
     $response = $this->userRequest('pekya', self::IRI);
     $this->assertResponseStatusCodeSame(403);

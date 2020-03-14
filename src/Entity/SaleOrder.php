@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
  *   denormalizationContext={"groups"={"saleorder:write"}},
  *   attributes={
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_CUSTOMER')",
- *     "pagination_items_per_page"=30
+ *     "pagination_items_per_page"=30,
  *   },
  *   collectionOperations={
  *     "get"={

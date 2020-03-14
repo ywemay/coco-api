@@ -9,8 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ApiResource(
- *   normalizationContext={"groups"={"saleorder:read"}},
- *   denormalizationContext={"groups"={"saleorder:write"}},
+ *   normalizationContext={"groups"={"saleorderitem:read"}},
+ *   denormalizationContext={"groups"={"saleorderitem:write"}},
  *   attributes={
  *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_CUSTOMER')",
  *     "pagination_items_per_page"=30
@@ -44,39 +44,38 @@ class SaleOrderItem
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"saleorder:read"})
+     * @Groups({"saleorder:read", "saleorderitem:read"})
      */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\SaleOrder")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"saleorder:read", "saleorder:write"})
-     * @Assert\Valid()
+     * @Groups({"saleorderitem:read", "saleorderitem:write"})
      */
     private $saleOrder;
 
     /**
      * @ORM\Column(type="string", length=6)
-     * @Groups({"saleorder:read", "saleorder:write"})
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
      */
     private $containerType;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"saleorder:read", "saleorder:write"})
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
      */
     private $startDateTime;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"saleorder:read", "saleorder:write"})
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"saleorder:read", "saleorder:write"})
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
      */
     private $description;
 

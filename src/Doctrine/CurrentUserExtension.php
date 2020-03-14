@@ -84,7 +84,6 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
       $queryBuilder->join("App\Entity\Company", 'c', 'WITH', 's.company = c.id');
       $queryBuilder->andWhere('c.owner = :uid');
       $queryBuilder->setParameter('uid', $user->getId());
-      // $query = $queryBuilder->getQuery();
     }
   }
 }
