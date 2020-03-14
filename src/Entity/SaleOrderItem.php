@@ -52,6 +52,7 @@ class SaleOrderItem
      * @ORM\ManyToOne(targetEntity="App\Entity\SaleOrder")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"saleorder:read", "saleorder:write"})
+     * @Assert\Valid()
      */
     private $saleOrder;
 
