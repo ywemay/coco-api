@@ -79,6 +79,11 @@ class SaleOrderItem
      */
     private $description;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\ContainerLoadOrder", mappedBy="saleOrderItem", cascade={"persist", "remove"})
+     */
+    private $containerLoadOrder;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -152,5 +157,22 @@ class SaleOrderItem
     public function getState(): ?int
     {
       return $this->getSaleOrder()->getState();
+    }
+
+    public function getContainerLoadOrder(): ?ContainerLoadOrder
+    {
+        return $this->containerLoadOrder;
+    }
+
+    public function setContainerLoadOrder(ContainerLoadOrder $containerLoadOrder): self
+    {
+        $this->containerLoadOrder = $containerLoadOrder;
+
+        // set the owning side of the relation if necessary
+        if ($containerLoadOrder->getSaleOrderItem() !== $this) {
+            $containerLoadOrder->setSaleOrderItem($this);
+        }
+
+        return $this;
     }
 }

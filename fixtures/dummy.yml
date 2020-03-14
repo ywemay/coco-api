@@ -140,3 +140,13 @@ App\Entity\SaleOrderItem:
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
     price: <numberBetween(100, 7000)>
     description: <sentence()>
+
+App\Entity\ContainerLoadOrder:
+
+  cl_order_orange{1..3}:
+    saleOrderItem (unique): '@so_item_orange*'
+    assignedTo: '@teamleader_vasea'
+
+  cl_order_blue{1..3}:
+    saleOrderItem: '@so_item_apple*'
+    assignedTo: '@teamleader_random_*'

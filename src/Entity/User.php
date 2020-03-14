@@ -119,9 +119,15 @@ class User implements UserInterface
      */
     private $companies;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ContainerLoadOrder", mappedBy="assignedTo")
+     */
+    private $containerLoadOrders;
+
     public function __construct()
     {
         $this->companies = new ArrayCollection();
+        $this->containerLoadOrders = new ArrayCollection();
     }
 
     /**
@@ -268,6 +274,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($company->getOwner() === $this) {
                 $company->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ContainerLoadOrder[]
+     */
+    public function getContainerLoadOrders(): Collection
+    {
+        return $this->containerLoadOrders;
+    }
+
+    public function addContainerLoadOrder(ContainerLoadOrder $containerLoadOrder): self
+    {
+        if (!$this->containerLoadOrders->contains($containerLoadOrder)) {
+            $this->containerLoadOrders[] = $containerLoadOrder;
+            $containerLoadOrder->setAssignedTo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContainerLoadOrder(ContainerLoadOrder $containerLoadOrder): self
+    {
+        if ($this->containerLoadOrders->contains($containerLoadOrder)) {
+            $this->containerLoadOrders->removeElement($containerLoadOrder);
+            // set the owning side to null (unless already changed)
+            if ($containerLoadOrder->getAssignedTo() === $this) {
+                $containerLoadOrder->setAssignedTo(null);
             }
         }
 

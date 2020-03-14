@@ -27,7 +27,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *   },
  *   itemOperations={
  *     "get"={
- *       "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_TEAMLEADER') or (is_granted('ROLE_CUSTOMER') && object.owner == user)"
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_TEAMLEADER') or (is_granted('ROLE_CUSTOMER') and object.owner == user)"
  *     },
  *     "put"={
  *       "security"="is_granted('ROLE_ADMIN')"
