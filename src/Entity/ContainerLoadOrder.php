@@ -1,4 +1,4 @@
-clorder<?php
+<?php
 
 namespace App\Entity;
 
@@ -17,21 +17,21 @@ use Doctrine\ORM\Mapping as ORM;
  *   },
  *   collectionOperations={
  *     "get"={
- *       "path"="/cl_orders",
+ *       "path"="/clorders",
  *       "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_TEAMLEADER')"
  *     },
- *     "post"={"path"="/cl_orders"}
+ *     "post"={"path"="/clorders"}
  *   },
  *   itemOperations={
  *     "get"={
- *       "path"="/cl_orders/{id}",
+ *       "path"="/clorders/{id}",
  *       "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_TEAMLEADER') and object.assignedTo == user)"
  *     },
  *     "put"={
- *       "path"="/cl_orders/{id}",
+ *       "path"="/clorders/{id}",
  *     },
  *     "delete"={
- *       "path"="/cl_orders/{id}",
+ *       "path"="/clorders/{id}",
  *     }
  *   }
  * )
@@ -46,14 +46,6 @@ class ContainerLoadOrder
      * @Groups({"clorder:read"})
      */
     private $id;
-
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\SaleOrderItem", inversedBy="containerLoadOrder", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"clorder:read", "clorder:write"})
-     * @Assert\NotNull
-     */
-    private $saleOrderItem;
 
     /**
      * @ORM\Column(type="datetime")
@@ -84,26 +76,20 @@ class ContainerLoadOrder
      */
     private $state = 0;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\SaleOrder", inversedBy="containerLoadOrder")
+     */
+    private $saleOrder;
+
     public function __construct()
     {
-      $this->setCreatedAt(date("Y-m-d H:i:s"));
+      $this->setCreatedAt(new \DateTime());
+      $this->setAmountDue(0);
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getSaleOrderItem(): ?SaleOrderItem
-    {
-        return $this->saleOrderItem;
-    }
-
-    public function setSaleOrderItem(SaleOrderItem $saleOrderItem): self
-    {
-        $this->saleOrderItem = $saleOrderItem;
-
-        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeInterface
@@ -137,9 +123,6 @@ class ContainerLoadOrder
 
     public function setAmountDue(int $amountDue): self
     {
-        if (!$this->getId() && !$amountDue) {
-          $this->amountDue = $this->getSaleOrderItem()->getSaleOrder()->getPrice();
-        }
         $this->amountDue = $amountDue;
 
         return $this;
@@ -153,6 +136,18 @@ class ContainerLoadOrder
     public function setState(int $state): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function getSaleOrder(): ?SaleOrder
+    {
+        return $this->saleOrder;
+    }
+
+    public function setSaleOrder(?SaleOrder $saleOrder): self
+    {
+        $this->saleOrder = $saleOrder;
 
         return $this;
     }

@@ -8,7 +8,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use App\Entity\User;
 use App\Entity\SaleOrder;
-use App\Entity\SaleOrderItem;
+use App\Entity\ContainerLoadOrder;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Security;
 
@@ -42,8 +42,8 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
     elseif (SaleOrder::class == $resourceClass) {
       $this->addSaleOrderRelatedWhere($queryBuilder);
     }
-    elseif (SaleOrderItem::class == $resourceClass) {
-      $this->addSaleOrderItemRelatedWhere($queryBuilder);
+    elseif (ContainerLoadOrder::class == $resourceClass) {
+      $this->addContainerLoadOrderRelatedWhere($queryBuilder);
     }
     return;
   }
@@ -75,14 +75,12 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
     }
   }
 
-  private function addSaleOrderItemRelatedWhere(QueryBuilder $queryBuilder): void
+  private function addContainerLoadOrderRelatedWhere(QueryBuilder $queryBuilder): void
   {
     $rootAlias = $queryBuilder->getRootAliases()[0];
-    if ($this->security->isGranted('ROLE_CUSTOMER')) {
+    if ($this->security->isGranted('ROLE_TEAMLEADER')) {
       $user = $this->security->getUser();
-      $queryBuilder->join("App\Entity\SaleOrder", 's', 'WITH', $rootAlias.'.saleOrder = s.id');
-      $queryBuilder->join("App\Entity\Company", 'c', 'WITH', 's.company = c.id');
-      $queryBuilder->andWhere('c.owner = :uid');
+      $queryBuilder->andWhere($rootAlias . '.assignedTo = :uid');
       $queryBuilder->setParameter('uid', $user->getId());
     }
   }

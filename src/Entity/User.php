@@ -115,22 +115,6 @@ class User implements UserInterface
     private $enabled;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Company", mappedBy="owner", orphanRemoval=true)
-     */
-    private $companies;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\ContainerLoadOrder", mappedBy="assignedTo")
-     */
-    private $containerLoadOrders;
-
-    public function __construct()
-    {
-        $this->companies = new ArrayCollection();
-        $this->containerLoadOrders = new ArrayCollection();
-    }
-
-    /**
      * @Groups({"saleorder:read", "user:read"})
      */
     public function getId(): ?int
@@ -208,23 +192,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getSalt()
-    {
-        // not needed when using the "bcrypt" algorithm in security.yaml
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials()
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
-
     public function getApiToken(): ?string
     {
         return $this->apiToken;
@@ -248,66 +215,21 @@ class User implements UserInterface
 
         return $this;
     }
-
+    
     /**
-     * @return Collection|Company[]
+     * @see UserInterface
      */
-    public function getCompanies(): Collection
+    public function getSalt()
     {
-        return $this->companies;
-    }
-
-    public function addCompany(Company $company): self
-    {
-        if (!$this->companies->contains($company)) {
-            $this->companies[] = $company;
-            $company->setOwner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCompany(Company $company): self
-    {
-        if ($this->companies->contains($company)) {
-            $this->companies->removeElement($company);
-            // set the owning side to null (unless already changed)
-            if ($company->getOwner() === $this) {
-                $company->setOwner(null);
-            }
-        }
-
-        return $this;
+        // not needed when using the "bcrypt" algorithm in security.yaml
     }
 
     /**
-     * @return Collection|ContainerLoadOrder[]
+     * @see UserInterface
      */
-    public function getContainerLoadOrders(): Collection
+    public function eraseCredentials()
     {
-        return $this->containerLoadOrders;
-    }
-
-    public function addContainerLoadOrder(ContainerLoadOrder $containerLoadOrder): self
-    {
-        if (!$this->containerLoadOrders->contains($containerLoadOrder)) {
-            $this->containerLoadOrders[] = $containerLoadOrder;
-            $containerLoadOrder->setAssignedTo($this);
-        }
-
-        return $this;
-    }
-
-    public function removeContainerLoadOrder(ContainerLoadOrder $containerLoadOrder): self
-    {
-        if ($this->containerLoadOrders->contains($containerLoadOrder)) {
-            $this->containerLoadOrders->removeElement($containerLoadOrder);
-            // set the owning side to null (unless already changed)
-            if ($containerLoadOrder->getAssignedTo() === $this) {
-                $containerLoadOrder->setAssignedTo(null);
-            }
-        }
-
-        return $this;
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }

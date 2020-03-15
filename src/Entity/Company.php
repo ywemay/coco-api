@@ -58,9 +58,8 @@ class Company
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="companies")
+     * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={ "remove"})
      * @ORM\JoinColumn(nullable=false)
-     * @Assert\Valid()
      */
     private $owner;
 
@@ -86,7 +85,7 @@ class Company
         return $this->owner;
     }
 
-    public function setOwner(?User $owner): self
+    public function setOwner(User $owner): self
     {
         $this->owner = $owner;
 

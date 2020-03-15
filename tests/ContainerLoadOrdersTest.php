@@ -27,12 +27,12 @@ class ContainerLoadOrdersTest extends ApiJWTTestCase
     // team leader can access assigned to him container load orders
     $response = $this->userRequest('vasea', self::IRI);
     $this->assertResponseStatusCodeSame(200);
-    $this->assertSame(3, $response->toArray()['hydra:totalItems']);
+    $this->assertSame(2, $response->toArray()['hydra:totalItems']);
 
     // admin can access all orders
     $response = $this->userRequest('admin', self::IRI);
     $this->assertResponseStatusCodeSame(200);
-    $this->assertSame(6, $response->toArray()['hydra:totalItems']);
+    $this->assertSame(3, $response->toArray()['hydra:totalItems']);
   }
 
   public function testCreate(): void
@@ -48,8 +48,7 @@ class ContainerLoadOrdersTest extends ApiJWTTestCase
   }
 
   private function createOrder($username) {
-    $client = $this->getAuthenticatedClient($username);
-    $iri = static::findIriBy(SaleOrder::class, ['company' => $companyId]);
+    $iri = static::findOne(SaleOrderItem::class);
     $response = $client->request('POST', self::IRI, ['json' => [
       'date'=>date('Y-m-d'),
       'company' => $this->getCompanyIri(),

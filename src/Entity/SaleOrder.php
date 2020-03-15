@@ -74,11 +74,34 @@ class SaleOrder
     private $state = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\SaleOrderItem", mappedBy="saleOrder", cascade={"persist"}, orphanRemoval=true)
-     * @Groups({"saleorder:read", "saleorder:write"})
-     * @Assert\Valid()
+     * @ORM\Column(type="string", length=6)
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
      */
-    private $saleOrderItems;
+    private $containerType;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
+     */
+    private $startDateTime;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
+     */
+    private $price;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
+     */
+    private $description;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\ContainerLoadOrder", mappedBy="saleOrder", cascade={"remove"})
+     */
+    private $containerLoadOrder;
+
 
     public function getId(): ?int
     {
@@ -128,33 +151,68 @@ class SaleOrder
         return $this;
     }
 
-    /**
-     * @return Collection|SaleOrderItem[]
-     */
-    public function getSaleOrderItems(): Collection
+    public function getContainerType(): ?string
     {
-        return $this->saleOrderItems;
+        return $this->containerType;
     }
 
-    public function addSaleOrderItem(SaleOrderItem $saleOrderItem): self
+    public function setContainerType(string $containerType): self
     {
-        if (!$this->saleOrderItems->contains($saleOrderItem)) {
-            $this->saleOrderItems[] = $saleOrderItem;
-            $saleOrderItem->setSaleOrder($this);
-        }
+        $this->containerType = $containerType;
+
         return $this;
     }
 
-    public function removeSaleOrderItem(SaleOrderItem $saleOrderItem): self
+    public function getStartDateTime(): ?\DateTimeInterface
     {
-        if ($this->saleOrderItems->contains($saleOrderItem)) {
-            $this->saleOrderItems->removeElement($saleOrderItem);
-            // set the owning side to null (unless already changed)
-            if ($saleOrderItem->getSaleOrder() === $this) {
-                $saleOrderItem->setSaleOrder(null);
-            }
-        }
+        return $this->startDateTime;
+    }
+
+    public function setStartDateTime(\DateTimeInterface $startDateTime): self
+    {
+        $this->startDateTime = $startDateTime;
+
         return $this;
     }
 
+    public function getPrice(): ?int
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?int $price): self
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getContainerLoadOrder(): ?ContainerLoadOrder
+    {
+        return $this->containerLoadOrder;
+    }
+
+    public function setContainerLoadOrder(ContainerLoadOrder $containerLoadOrder): self
+    {
+        $this->containerLoadOrder = $containerLoadOrder;
+
+        // set the owning side of the relation if necessary
+        if ($containerLoadOrder->getSaleOrder() !== $this) {
+            $containerLoadOrder->setSaleOrder($this);
+        }
+
+        return $this;
+    }
 }

@@ -13,7 +13,7 @@ App\Entity\User:
     roles: ['ROLE_TEAMLEADER']
 
   teamleader_random_{1..2}:
-    username (unique): '<username()>'
+    username (unique): 'tl_<username()>'
     password: 'nothing usefull'
     enabled: false
     roles: ['ROLE_TEAMLEADER']
@@ -31,13 +31,13 @@ App\Entity\User:
     roles: ['ROLE_WORKER']
 
   worker_{1..9}:
-    username (unique): '<username()>'
+    username (unique): 'wk_<username()>'
     password: 'no password available'
     enabled: true
     roles: ['ROLE_WORKER']
 
   customer_random_{1..9}:
-    username (unique): '<username()>'
+    username (unique): 'cu_<username()>'
     password: 'notest'
     enabled: true
     roles: ['ROLE_CUSTOMER']
@@ -62,17 +62,13 @@ App\Entity\User:
 
 App\Entity\Company:
 
-  company{1..20}:
+  company{1..9}:
     name: <company()>
-    owner: '@customer_random_*'
+    owner (unique): '@customer_random_*'
 
   company_apple:
     name: 'Comapny Apple'
-    owner: '@customer_apple'
-
-  company_apple_red:
-    name: 'Company Aplle Red'
-    owner: '@customer_apple'
+    owner (unique): '@customer_apple'
 
   company_orange:
     name: 'Company Orange'
@@ -88,54 +84,24 @@ App\Entity\SaleOrder:
     date: <dateTime('now')>
     company: '@company_apple'
     state: 0
-
-  sale_order_apple_red{1..3}:
-    date: <dateTime('now')>
-    company: '@company_apple_red'
-    state: 0
+    startDateTime: <dateTime('now')>
+    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+    price: <numberBetween(100, 7000)>
+    description: <sentence()>
 
   sale_order_orange{1..2}:
     date: <dateTime('now')>
     company: '@company_orange'
     state: 0
+    startDateTime: <dateTime('now')>
+    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+    price: <numberBetween(100, 7000)>
+    description: <sentence()>
 
   sale_order_purple{1..2}:
     date: <dateTime('now')>
     company: '@company_purple'
     state: 0
-
-App\Entity\SaleOrderItem:
-
-  so_item_apple{1..10}:
-    saleOrder: '@sale_order_apple*'
-    startDateTime: <dateTime('now')>
-    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
-    price: <numberBetween(100, 7000)>
-    description: <sentence()>
-
-  so_item_apple_red{1..10}:
-    saleOrder: '@sale_order_apple_red*'
-    startDateTime: <dateTime('now')>
-    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
-    price: <numberBetween(100, 7000)>
-    description: <sentence()>
-
-  so_item_orange{1..3}:
-    saleOrder: '@sale_order_orange1'
-    startDateTime: <dateTime('now')>
-    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
-    price: <numberBetween(100, 7000)>
-    description: <sentence()>
-
-  so_item_orange{4..6}:
-    saleOrder: '@sale_order_orange2'
-    startDateTime: <dateTime('now')>
-    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
-    price: <numberBetween(100, 7000)>
-    description: <sentence()>
-
-  so_item_purple{1..3}:
-    saleOrder: '@sale_order_purple*'
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
     price: <numberBetween(100, 7000)>
@@ -143,10 +109,14 @@ App\Entity\SaleOrderItem:
 
 App\Entity\ContainerLoadOrder:
 
-  cl_order_orange{1..3}:
-    saleOrderItem (unique): '@so_item_orange*'
+  cl_order_orange1:
+    saleOrder: '@sale_order_orange1'
     assignedTo: '@teamleader_vasea'
 
-  cl_order_blue{1..3}:
-    saleOrderItem: '@so_item_apple*'
+  cl_order_orange2:
+    saleOrder: '@sale_order_orange2'
+    assignedTo: '@teamleader_vasea'
+
+  cl_order_blue1:
+    saleOrder: '@sale_order_apple1'
     assignedTo: '@teamleader_random_*'

@@ -19,6 +19,7 @@ class UserDataPersister implements DataPersisterInterface
         $this->userPasswordEncoder = $userPasswordEncoder;
         $this->requestStack = $requestStack;
     }
+    
     public function supports($data): bool
     {
         return $data instanceof User;
