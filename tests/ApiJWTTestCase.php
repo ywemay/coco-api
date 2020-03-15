@@ -50,7 +50,9 @@ class ApiJWTTestCase extends ApiTestCase
 
     public function userRequest($username, $iri, $method='GET')
     {
-      $client = $this->getAuthenticatedClient($username);
+      $client = $username
+        ? $this->getAuthenticatedClient($username)
+        : static::createClient();
       return $client->request($method, $iri);
     }
 
@@ -58,5 +60,15 @@ class ApiJWTTestCase extends ApiTestCase
     {
       $parts = explode("/", $iri);
       return end($parts);
+    }
+
+    public function findIriBy(string $resourceClass, array $criteria): ?string
+    {
+      foreach($criteria as $k => $v) {
+        if (preg_match("/^\/api\/.*?(\d+)$/", $v, $mt)){
+          $criteria[$k] = $mt[1];
+        }
+      }
+      return parent::findIriBy($resourceClass, $criteria);
     }
 }

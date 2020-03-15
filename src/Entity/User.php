@@ -80,6 +80,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank()
+     * @Assert\Unique()
      * @Groups({"user:write", "user:read", "user:regcustomer", "user:regteamleader", "user:regworker"})
      */
     private $username;
@@ -113,6 +114,11 @@ class User implements UserInterface
      * @Groups({"user:write", "user:read"})
      */
     private $enabled;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Company", mappedBy="owner", orphanRemoval=true)
+     */
+    private $company;
 
     /**
      * @Groups({"saleorder:read", "user:read"})
@@ -215,7 +221,7 @@ class User implements UserInterface
 
         return $this;
     }
-    
+
     /**
      * @see UserInterface
      */
@@ -231,5 +237,27 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getCompany(): ?Company
+    {
+        return $this->company;
+    }
+
+    public function setCompany(Company $company): self
+    {
+        $this->company = $company;
+
+        // set the owning side of the relation if necessary
+        if ($company->getOwner() !== $this) {
+            $company->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+      return $this->getUsername();
     }
 }

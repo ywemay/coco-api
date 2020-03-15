@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
@@ -27,7 +28,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *   },
  *   itemOperations={
  *     "get"={
- *       "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_TEAMLEADER') or (is_granted('ROLE_CUSTOMER') and object.owner == user)"
+ *       "security"="is_granted('ROLE_ADMIN') or (is_granted('ROLE_CUSTOMER') and object.getOwner() == user)"
  *     },
  *     "put"={
  *       "security"="is_granted('ROLE_ADMIN')"
@@ -39,7 +40,8 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  * )
  * @ORM\Entity(repositoryClass="App\Repository\CompanyRepository")
  * @ApiFilter(PropertyFilter::class)
- * @ApiFilter(SearchFilter::class, properties={"name" : "partial"})
+ * @ApiFilter(SearchFilter::class, properties={"name" : "partial", "owner" : "exact"})
+ * @UniqueEntity("owner")
  */
 class Company
 {
@@ -54,12 +56,14 @@ class Company
     /**
      * @ORM\Column(type="string", length=150)
      * @Groups({"company:read", "company:write"})
+     * @Assert\NotBlank()
      */
     private $name;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={ "remove"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="company")
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"company:read", "company:write"})
      */
     private $owner;
 

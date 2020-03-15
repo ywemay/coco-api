@@ -6,101 +6,106 @@ App\Entity\User:
     enabled: true
     roles: ['ROLE_ADMIN']
 
-  teamleader_vasea:
-    username: 'vasea'
-    password: <encodePassword(@teamleader_vasea, 'vasea')>
+  # TEAM LEADER ACCOUNTS:
+  teamleader:
+    username: 'teamleader'
+    password: <encodePassword(@self, @self->username)>
     enabled: true
     roles: ['ROLE_TEAMLEADER']
 
-  teamleader_random_{1..2}:
-    username (unique): 'tl_<username()>'
-    password: 'nothing usefull'
+  teamleader_disabled:
+    username: 'teamleader_disabled'
+    password: <encodePassword(@self, @self->username)>
+    enabled: true
+    roles: ['ROLE_TEAMLEADER']
+
+  teamleader_random_{1..8}:
+    username (unique): '<username()>'
+    password: 'none'
     enabled: false
     roles: ['ROLE_TEAMLEADER']
 
-  worker_pekya:
-    username: 'pekya'
-    password: <encodePassword(@worker_pekya, 'pekya')>
+  # WORKER ACCOUNTS:
+  worker:
+    username: 'worker'
+    password: <encodePassword(@self, @self->username)>
     enabled: true
     roles: ['ROLE_WORKER']
 
-  worker_mihai:
-    username: 'mihai'
-    password: <encodePassword(@worker_mihai, 'mihai')>
+  worker_disabled:
+    username: 'worker_disabled'
+    password: <encodePassword(@self, @self->username)>
     enabled: false
     roles: ['ROLE_WORKER']
 
-  worker_{1..9}:
-    username (unique): 'wk_<username()>'
-    password: 'no password available'
+  worker_random{1..20}:
+    username (unique): '<username()>'
+    password: 'none'
     enabled: true
     roles: ['ROLE_WORKER']
+
+  # CUSTOMERS:
+  customer:
+    username: 'customer'
+    password: <encodePassword(@self, @self->username)>
+    enabled: true
+    roles: ['ROLE_CUSTOMER']
+
+  customer2:
+    username: 'customer2'
+    password: <encodePassword(@self, @self->username)>
+    enabled: true
+    roles: ['ROLE_CUSTOMER']
+
+  customer_disabled:
+    username: 'customer_disabled'
+    password: <encodePassword(@self, @self->username)>
+    enabled: false
+    roles: ['ROLE_CUSTOMER']
 
   customer_random_{1..9}:
-    username (unique): 'cu_<username()>'
-    password: 'notest'
-    enabled: true
-    roles: ['ROLE_CUSTOMER']
-
-  customer_apple:
-    username: 'apple'
-    password: <encodePassword(@customer_apple, 'apple')>
-    enabled: false
-    roles: ['ROLE_CUSTOMER']
-
-  customer_orange:
-    username: 'orange'
-    password: <encodePassword(@customer_orange, 'orange')>
-    enabled: true
-    roles: ['ROLE_CUSTOMER']
-
-  customer_purple:
-    username: 'purple'
-    password: <encodePassword(@customer_purple, 'purple')>
+    username (unique): '<username()>'
+    password: 'none'
     enabled: true
     roles: ['ROLE_CUSTOMER']
 
 App\Entity\Company:
 
-  company{1..9}:
+  company_random_{@customer_random_*}:
     name: <company()>
-    owner (unique): '@customer_random_*'
+    owner: <current()>
 
-  company_apple:
-    name: 'Comapny Apple'
-    owner (unique): '@customer_apple'
+  company:
+    name: 'Company Customer Enabled'
+    owner: '@customer'
 
-  company_orange:
-    name: 'Company Orange'
-    owner: '@customer_orange'
-
-  company_purple:
-    name: 'Company Purple'
-    owner: '@customer_purple'
+  company_disabled:
+    name: 'Company Customer Disabled'
+    owner: '@customer_disabled'
 
 App\Entity\SaleOrder:
 
-  sale_order_apple{1..5}:
-    date: <dateTime('now')>
-    company: '@company_apple'
+  sale_order{1..15}:
+    date: <dateTime('now - 15days + <current()>days')>
+    company: '@company'
     state: 0
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
     price: <numberBetween(100, 7000)>
     description: <sentence()>
 
-  sale_order_orange{1..2}:
+  sale_order_disabled{1..2}:
     date: <dateTime('now')>
-    company: '@company_orange'
+    company: '@company_disabled'
     state: 0
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
     price: <numberBetween(100, 7000)>
     description: <sentence()>
 
-  sale_order_purple{1..2}:
+  sale_order_random{1..22}:
     date: <dateTime('now')>
-    company: '@company_purple'
+    company: '@company_random_*'
     state: 0
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
@@ -110,13 +115,5 @@ App\Entity\SaleOrder:
 App\Entity\ContainerLoadOrder:
 
   cl_order_orange1:
-    saleOrder: '@sale_order_orange1'
-    assignedTo: '@teamleader_vasea'
-
-  cl_order_orange2:
-    saleOrder: '@sale_order_orange2'
-    assignedTo: '@teamleader_vasea'
-
-  cl_order_blue1:
-    saleOrder: '@sale_order_apple1'
-    assignedTo: '@teamleader_random_*'
+    saleOrder: '@sale_order1'
+    assignedTo: '@teamleader'
