@@ -62,7 +62,9 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *         "put"={
  *          "security"="is_granted('ROLE_ADMIN')"
  *         },
- *         "delete"={"security"="is_granted('ROLE_ADMIN')"}
+ *         "delete"={
+ *          "security"="is_granted('ROLE_ADMIN')"
+ *         }
  *     }
  * )
  * @ApiFilter(PropertyFilter::class)
@@ -81,7 +83,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank()
      * @Assert\Unique()
-     * @Groups({"user:write", "user:read", "user:regcustomer", "user:regteamleader", "user:regworker"})
+     * @Groups({"user:write", "user:read", "user:regcustomer", "user:regteamleader", "user:regworker", "clorder:read"})
      */
     private $username;
 
@@ -117,6 +119,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Company", mappedBy="owner", orphanRemoval=true)
+     * @Groups({"user:read"})
      */
     private $company;
 
@@ -159,6 +162,20 @@ class User implements UserInterface
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
+    }
+
+    /**
+     * @Groups({"user:read"})
+     */
+    public function getPlainRoles(): array
+    {
+      $roles = $this->getRoles();
+      $rez = array();
+      foreach ($roles as $k=>$role) {
+        if ($role == 'ROLE_USER') continue;
+        $rez[$k] = mb_strtolower(preg_replace("/^ROLE\_/", "", $role));
+      }
+      return $rez;
     }
 
     public function setRoles(array $roles): self

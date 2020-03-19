@@ -55,7 +55,7 @@ class ContainerLoadOrder
     private $createdAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="containerLoadOrders")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @Groups({"clorder:read", "clorder:write"})
      */
     private $assignedTo;
@@ -78,6 +78,7 @@ class ContainerLoadOrder
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\SaleOrder", inversedBy="containerLoadOrder")
+     * @Groups({"clorder:write", "clorder:read"})
      */
     private $saleOrder;
 
@@ -97,6 +98,14 @@ class ContainerLoadOrder
         return $this->createdAt;
     }
 
+    /**
+     * @Groups({"clorder:read"})
+     */
+    public function getPlainCreatedAt(): ?string
+    {
+      return $this->getCreatedAt()->format("Y-m-d H:i");
+    }
+
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
@@ -112,7 +121,6 @@ class ContainerLoadOrder
     public function setAssignedTo(?User $assignedTo): self
     {
         $this->assignedTo = $assignedTo;
-
         return $this;
     }
 

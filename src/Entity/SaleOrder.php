@@ -49,6 +49,7 @@ class SaleOrder
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"saleorder:read"})
      */
     private $id;
 
@@ -61,7 +62,7 @@ class SaleOrder
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Company")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"saleorder:read", "saleorder:write"})
+     * @Groups({"saleorder:read", "saleorder:write", "clorder:read"})
      * @Assert\Valid()
      */
     private $company;
@@ -75,7 +76,7 @@ class SaleOrder
 
     /**
      * @ORM\Column(type="string", length=6)
-     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write", "clorder:read"})
      */
     private $containerType;
 
@@ -87,18 +88,18 @@ class SaleOrder
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write"})
+     * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write", "clorder:read"})
      */
     private $description;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\ContainerLoadOrder", mappedBy="saleOrder", cascade={"remove"})
+     * @Groups({"saleorder:read"})
      */
     private $containerLoadOrder;
 
@@ -168,6 +169,14 @@ class SaleOrder
         return $this->startDateTime;
     }
 
+    /**
+     * @Groups({"saleorder:read", "clorder:read"})
+     */
+    public function getPlainStartDateTime(): ?string
+    {
+      return $this->getStartDateTime()->format('Y-m-d H:i');
+    }
+
     public function setStartDateTime(\DateTimeInterface $startDateTime): self
     {
         $this->startDateTime = $startDateTime;
@@ -175,14 +184,20 @@ class SaleOrder
         return $this;
     }
 
-    public function getPrice(): ?int
+    /**
+     * @Groups({"saleorderitem:read", "saleorder:read", "clorder:read"})
+     */
+    public function getPrice(): ?float
     {
-        return $this->price;
+        return $this->price / 100;
     }
 
-    public function setPrice(?int $price): self
+    /**
+     * @Groups({"saleorderitem:write", "saleorder:write"})
+     */
+    public function setPrice(?float $price): self
     {
-        $this->price = $price;
+        $this->price = intval($price * 100);
 
         return $this;
     }

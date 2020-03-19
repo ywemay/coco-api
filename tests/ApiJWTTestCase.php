@@ -64,7 +64,7 @@ class ApiJWTTestCase extends ApiTestCase
       return $client;
     }
 
-    public function userRequest($username, $iri = FALSE, $method='GET', $params = [], $options = [])
+    public function userRequest($username, $method = 'GET', $iri = FALSE, $params = [], $options = [])
     {
       if (!$iri) $iri = $this->iri;
       $client = $username
@@ -75,27 +75,27 @@ class ApiJWTTestCase extends ApiTestCase
 
     public function anonymousRequest($method = 'GET', $iri=false, $params = [], $options = [])
     {
-      return $this->userRequest(false, $iri, $method, $params, $options);
+      return $this->userRequest(false, $method, $iri, $params, $options);
     }
 
     public function adminRequest($method = 'GET', $iri=false, $params = [], $options = [])
     {
-      return $this->userRequest('admin', $iri, $method, $params, $options);
+      return $this->userRequest('admin', $method, $iri, $params, $options);
     }
 
     public function customerRequest($method = 'GET', $iri=false, $params = [], $options = [])
     {
-      return $this->userRequest('customer', $iri, $method, $params, $options);
+      return $this->userRequest('customer', $method, $iri, $params, $options);
     }
 
     public function workerRequest($method = 'GET', $iri=false, $params = [], $options = [])
     {
-      return $this->userRequest('worker', $iri, $method, $params, $options);
+      return $this->userRequest('worker', $method, $iri, $params, $options);
     }
 
     public function teamleaderRequest($method = 'GET', $iri=false, $params = [], $options = [])
     {
-      return $this->userRequest('teamleader', $iri, $method, $params, $options);
+      return $this->userRequest('teamleader', $method, $iri, $params, $options);
     }
 
     public function iriToId($iri)

@@ -57,13 +57,19 @@ App\Entity\User:
     enabled: true
     roles: ['ROLE_CUSTOMER']
 
+  customer3:
+    username: 'customer3'
+    password: <encodePassword(@self, @self->username)>
+    enabled: true
+    roles: ['ROLE_CUSTOMER']
+
   customer_disabled:
     username: 'customer_disabled'
     password: <encodePassword(@self, @self->username)>
     enabled: false
     roles: ['ROLE_CUSTOMER']
 
-  customer_random_{1..9}:
+  customer_random_{1..8}:
     username (unique): '<username()>'
     password: 'none'
     enabled: true

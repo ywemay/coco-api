@@ -14,23 +14,28 @@ class ContainerLoadOrdersTest extends ApiJWTTestCase
 
   const IRI = '/api/clorders';
 
+  public function setUp()
+  {
+    $this->setIri('/api/clorders');
+  }
+
   public function testList(): void
   {
     // customers cannot access container load orders, or shall they?
-    $response = $this->userRequest('orange', self::IRI);
+    $response = $this->userRequest('orange');
     $this->assertResponseStatusCodeSame(403);
 
     // workers cannot access container load ordders
-    $response = $this->userRequest('pekya', self::IRI);
+    $response = $this->userRequest('pekya');
     $this->assertResponseStatusCodeSame(403);
 
     // team leader can access assigned to him container load orders
-    $response = $this->userRequest('vasea', self::IRI);
+    $response = $this->userRequest('vasea');
     $this->assertResponseStatusCodeSame(200);
     $this->assertSame(2, $response->toArray()['hydra:totalItems']);
 
     // admin can access all orders
-    $response = $this->userRequest('admin', self::IRI);
+    $response = $this->userRequest('admin');
     $this->assertResponseStatusCodeSame(200);
     $this->assertSame(3, $response->toArray()['hydra:totalItems']);
   }
