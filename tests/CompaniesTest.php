@@ -16,6 +16,10 @@ class BooksTest extends ApiJWTTestCase
   const IRI = '/api/companies';
   const COMPANY = 'Company Name LTD';
 
+  public function setUp(){
+    $this->setIri(self::IRI);
+  }
+
   public function testList(): void
   {
       $this->userRequest(false, self::IRI);
@@ -62,6 +66,28 @@ class BooksTest extends ApiJWTTestCase
     return $response;
   }
 
+  private function multitest($params)
+  {
+    $params += array(
+      'context' => 'Unknown',
+      'iri' => $this->getIri(),
+      'method' => 'GET',
+      'params' => [],
+      'users' => []
+    );
+
+    $o = (object) $params;
+
+    print "\n";
+    if ($o->users) {
+      foreach ($o->users as $key => $code) {
+        $f = $key . 'Request';
+        $resp = $this->$f($o->method, $o->iri, $o->params);
+        $this->assertResponseStatusCodeSame($code, "Failed to get asseted $code for $key in $o->context");
+      }
+    }
+  }
+
   public function testCreate(): void
   {
     // $r = $this->createCompany('admin');
@@ -70,6 +96,31 @@ class BooksTest extends ApiJWTTestCase
 
     // $r = $this->createCompany('customer');
     // $this->assertResponseStatusCodeSame(500);
+
+    $client = $this->getAuthenticatedClient('admin');
+
+    $json = ['name' => self::COMPANY];
+    $json['owner'] = self::findIriBy(User::class, ['username' => 'customer']);
+    $params['json'] = $json;
+
+    $this->multitest(array(
+      'context' => 'testCreate',
+      'method' => 'POST',
+      'params' => $params,
+      'users' => array(
+        'admin' => 201,
+        'anonymous' => 401,
+        'teamleader' => 403,
+        'customer' => 400,
+      )
+    ));
+
+/*
+    $this->adminRequest('POST', $this->getIri(), $params);
+    $this->assertResponseStatusCodeSame(200);
+
+    $this->adminRequest('POST', $this->getIri(), $params);
+    $this->assertResponseStatusCodeSame(200);
 
     $client = static::createClient([], [
       'auth_bearer' => $this->getToken('admin'),
@@ -87,7 +138,7 @@ class BooksTest extends ApiJWTTestCase
       ],
     ]);
     dd($response->toArray());
-    $this->assertResponseStatusCodeSame(201);
+    $this->assertResponseStatusCodeSame(201);*/
   }
 
   public function testCreate2(): void

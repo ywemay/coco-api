@@ -12,23 +12,29 @@ class SaleOrdersTest extends ApiJWTTestCase
 {
   use RefreshDatabaseTrait;
 
-  const IRI = '/api/orders';
+  protected function setUp()
+  {
+    $this->setIri('/api/orders');
+  }
 
   public function testList(): void
   {
-    $response = $this->userRequest('orange', self::IRI);
-    $this->assertResponseStatusCodeSame(200);
-    $this->assertSame(2, $response->toArray()['hydra:totalItems']);
+    $this->anonymousRequest();
+    $this->assertResponseStatusCodeSame(401);
 
-    $response = $this->userRequest('pekya', self::IRI);
+    $response = $this->customerRequest();
+    $this->assertResponseStatusCodeSame(200);
+    $this->assertSame(15, $response->toArray()['hydra:totalItems']);
+
+    $this->teamleaderRequest();
     $this->assertResponseStatusCodeSame(403);
 
-    $response = $this->userRequest('vasea', self::IRI);
+    $this->workerRequest();
     $this->assertResponseStatusCodeSame(403);
 
-    $response = $this->userRequest('admin', self::IRI);
+    $response = $this->adminRequest();
     $this->assertResponseStatusCodeSame(200);
-    $this->assertSame(12, $response->toArray()['hydra:totalItems']);
+    $this->assertSame(39, $response->toArray()['hydra:totalItems']);
   }
 
   public function testCreateOrder(): void
@@ -51,7 +57,7 @@ class SaleOrdersTest extends ApiJWTTestCase
 
   private function createOrder($username) {
     $client = $this->getAuthenticatedClient($username);
-    $response = $client->request('POST', self::IRI,['json' => [
+    $response = $client->request('POST', $this->getIri(),['json' => [
       'date'=>date('Y-m-d'),
       'company' => $this->getCompanyIri(),
       'state' => 1

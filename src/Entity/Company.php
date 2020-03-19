@@ -55,7 +55,7 @@ class Company
 
     /**
      * @ORM\Column(type="string", length=150)
-     * @Groups({"company:read", "company:write"})
+     * @Groups({"company:read", "company:write", "user:read", "user:write"})
      * @Assert\NotBlank()
      */
     private $name;

@@ -10,10 +10,26 @@ class ApiJWTTestCase extends ApiTestCase
     // This trait provided by HautelookAliceBundle will take care of refreshing the database content to a known state before each test
     use RefreshDatabaseTrait;
 
+    const ADMIN = 'admin';
+    const WORKER = 'worker';
+    const TEAMLEADER = 'teamleader';
+    const CUSTOMER = 'customer';
+
+    private $iri = '';
+
     private $credentials = array(
       'username' => 'admin',
       'password' => 'admin'
     );
+
+    public function setIri($iri) {
+      $this->iri = $iri;
+    }
+
+    public function getIri(): ?string
+    {
+      return $this->iri;
+    }
 
     public function getToken($credentials = []): string
     {
@@ -48,12 +64,38 @@ class ApiJWTTestCase extends ApiTestCase
       return $client;
     }
 
-    public function userRequest($username, $iri, $method='GET')
+    public function userRequest($username, $iri = FALSE, $method='GET', $params = [], $options = [])
     {
+      if (!$iri) $iri = $this->iri;
       $client = $username
         ? $this->getAuthenticatedClient($username)
         : static::createClient();
-      return $client->request($method, $iri);
+      return $client->request($method, $iri, $params, $options);
+    }
+
+    public function anonymousRequest($method = 'GET', $iri=false, $params = [], $options = [])
+    {
+      return $this->userRequest(false, $iri, $method, $params, $options);
+    }
+
+    public function adminRequest($method = 'GET', $iri=false, $params = [], $options = [])
+    {
+      return $this->userRequest('admin', $iri, $method, $params, $options);
+    }
+
+    public function customerRequest($method = 'GET', $iri=false, $params = [], $options = [])
+    {
+      return $this->userRequest('customer', $iri, $method, $params, $options);
+    }
+
+    public function workerRequest($method = 'GET', $iri=false, $params = [], $options = [])
+    {
+      return $this->userRequest('worker', $iri, $method, $params, $options);
+    }
+
+    public function teamleaderRequest($method = 'GET', $iri=false, $params = [], $options = [])
+    {
+      return $this->userRequest('teamleader', $iri, $method, $params, $options);
     }
 
     public function iriToId($iri)
