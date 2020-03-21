@@ -68,7 +68,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *     }
  * )
  * @ApiFilter(PropertyFilter::class)
- * @ApiFilter(SearchFilter::class, properties={"username" : "start"})
+ * @ApiFilter(SearchFilter::class, properties={"username" : "start", "roles" : "partial", "enabled": "exact"})
  */
 class User implements UserInterface
 {
@@ -162,6 +162,17 @@ class User implements UserInterface
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
+    }
+
+    public function setPlainRoles(array $roles)
+    {
+      $allow = ['admin', 'teamleader', 'worker', 'customer'];
+      $rez = [];
+      foreach ($roles as $value) {
+        if (!in_array($allow, $value)) continue;
+        $rez[] = 'ROLE_' . mb_strtoupper($value);
+      }
+      return $this->setRoles($rez);
     }
 
     /**
