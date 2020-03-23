@@ -54,7 +54,7 @@ class SaleOrder
     private $id;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="date", options={"default": "CURRENT_TIMESTAMP"})
      * @Groups({"saleorder:read", "saleorder:write"})
      */
     private $date;
@@ -103,6 +103,15 @@ class SaleOrder
      */
     private $containerLoadOrder;
 
+    /**
+     * @ORM\PrePersist
+     */
+    public function initDataOnPrePersists()
+    {
+      if (!$this->getDate()) {
+        $this->date = date('Y-m-d');
+      }
+    }
 
     public function getId(): ?int
     {
