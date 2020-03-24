@@ -31,3 +31,10 @@ services:
         decorates: 'api_platform.serializer.context_builder'
         arguments: [ '@App\Serializer\ApiContextBuilder.inner' ]
         autoconfigure: false
+
+    App\Doctrine\UserListener:
+      tags: [doctrine.orm.entity_listener]
+    App\Doctrine\SaleOrderListener:
+      tags: [doctrine.orm.entity_listener]
+    App\Doctrine\ContainerLoadReportListener:
+      tags: [doctrine.orm.entity_listener]

@@ -69,7 +69,8 @@ class UsersTest extends ApiJWTTestCase
       'username' => 'dummycustomer',
       'password' => 'dummyPass1',
       'phone' => '13599999999',
-      'email' => 'dummycustomer@example.loc'
+      'email' => 'dummycustomer@example.loc',
+      'company' => 'Dummy Company'
     ]]);
     $this->assertResponseStatusCodeSame(201);
   }

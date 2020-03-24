@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\ContainerLoadOrder;
+use App\Entity\ContainerLoadReport;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
- * @method ContainerLoadOrder|null find($id, $lockMode = null, $lockVersion = null)
- * @method ContainerLoadOrder|null findOneBy(array $criteria, array $orderBy = null)
- * @method ContainerLoadOrder[]    findAll()
- * @method ContainerLoadOrder[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ContainerLoadReport|null find($id, $lockMode = null, $lockVersion = null)
+ * @method ContainerLoadReport|null findOneBy(array $criteria, array $orderBy = null)
+ * @method ContainerLoadReport[]    findAll()
+ * @method ContainerLoadReport[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ContainerLoadOrderRepository extends ServiceEntityRepository
+class ContainerLoadReportRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ContainerLoadOrder::class);
+        parent::__construct($registry, ContainerLoadReport::class);
     }
 
     // /**
-    //  * @return ContainerLoadOrder[] Returns an array of ContainerLoadOrder objects
+    //  * @return ContainerLoadReport[] Returns an array of ContainerLoadReport objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class ContainerLoadOrderRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?ContainerLoadOrder
+    public function findOneBySomeField($value): ?ContainerLoadReport
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.exampleField = :val')

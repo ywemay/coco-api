@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\EntityListeners("App\Doctrine\SaleOrderListener")
  * @ApiResource(
  *   normalizationContext={"groups"={"saleorder:read"}},
  *   denormalizationContext={"groups"={"saleorder:write"}},
@@ -45,6 +46,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class SaleOrder
 {
+    const FRESH = 0;
+    const PLANNED = 1;
+    const IN_PROGRESS = 3;
+    const DONE = 4;
+    const CANCELED = 5;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -54,23 +61,15 @@ class SaleOrder
     private $id;
 
     /**
-     * @ORM\Column(type="date", options={"default": "CURRENT_TIMESTAMP"})
+     * @ORM\Column(type="date")
      * @Groups({"saleorder:read", "saleorder:write"})
      */
     private $date;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Company")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"saleorder:read", "saleorder:write", "clorder:read"})
-     * @Assert\Valid()
-     */
-    private $company;
-
-    /**
      * @ORM\Column(type="smallint")
      * @Assert\Range(min = 0, max = 10)
-     * @Groups({"saleorder:read", "saleorder:write"})
+     * @Groups({"saleorder:read"})
      */
     private $state = 0;
 
@@ -88,6 +87,7 @@ class SaleOrder
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"saleorder:read", "admin:write"})
      */
     private $price;
 
@@ -98,10 +98,24 @@ class SaleOrder
     private $description;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\ContainerLoadOrder", mappedBy="saleOrder", cascade={"remove"})
-     * @Groups({"saleorder:read"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @Groups({"saleorder:read", "admin:write"})
      */
-    private $containerLoadOrder;
+    private $assignedTo;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\ContainerLoadReport", mappedBy="saleOrder", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $containerLoadReport;
+
+    /**
+     * @Groups({"saleorder:read", "admin:write"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="saleOrders", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotNull
+     */
+    private $owner;
 
     /**
      * @ORM\PrePersist
@@ -126,23 +140,6 @@ class SaleOrder
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
-
-        return $this;
-    }
-
-    public function getCompany(): ?Company
-    {
-        return $this->company;
-    }
-
-    public function getOwner(): ?User
-    {
-      return $this->getCompany()->getOwner();
-    }
-
-    public function setCompany(?Company $company): self
-    {
-        $this->company = $company;
 
         return $this;
     }
@@ -193,17 +190,11 @@ class SaleOrder
         return $this;
     }
 
-    /**
-     * @Groups({"saleorderitem:read", "saleorder:read", "clorder:read"})
-     */
     public function getPrice(): ?float
     {
         return $this->price / 100;
     }
 
-    /**
-     * @Groups({"saleorderitem:write", "saleorder:write"})
-     */
     public function setPrice(?float $price): self
     {
         $this->price = intval($price * 100);
@@ -223,19 +214,42 @@ class SaleOrder
         return $this;
     }
 
-    public function getContainerLoadOrder(): ?ContainerLoadOrder
+    public function getAssignedTo(): ?User
     {
-        return $this->containerLoadOrder;
+        return $this->assignedTo;
     }
 
-    public function setContainerLoadOrder(ContainerLoadOrder $containerLoadOrder): self
+    public function setAssignedTo(?User $assignedTo): self
     {
-        $this->containerLoadOrder = $containerLoadOrder;
+        $this->assignedTo = $assignedTo;
+        return $this;
+    }
+
+    public function getContainerLoadReport(): ?ContainerLoadReport
+    {
+        return $this->containerLoadReport;
+    }
+
+    public function setContainerLoadReport(ContainerLoadReport $containerLoadReport): self
+    {
+        $this->containerLoadReport = $containerLoadReport;
 
         // set the owning side of the relation if necessary
-        if ($containerLoadOrder->getSaleOrder() !== $this) {
-            $containerLoadOrder->setSaleOrder($this);
+        if ($containerLoadReport->getSaleOrder() !== $this) {
+            $containerLoadReport->setSaleOrder($this);
         }
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }

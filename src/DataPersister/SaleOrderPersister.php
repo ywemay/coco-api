@@ -24,6 +24,12 @@ class SaleOrderPersister implements DataPersisterInterface
    */
   public function persist($data)
   {
+    if (!$data->getAssignedTo() && $data->getState() == 1) {
+      $data->setState(SaleOrder::FRESH);
+    }
+    elseif ($data->getAssignedTo() && $data->getState() == 0) {
+      $data->setState(SaleOrder::PLANNED);
+    }
     $this->entityManager->persist($data);
     $this->entityManager->flush();
   }

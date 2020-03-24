@@ -5,6 +5,8 @@ App\Entity\User:
     password: <encodePassword(@admin, 'admin')>
     enabled: true
     roles: ['ROLE_ADMIN']
+    phone: <e164PhoneNumber()>
+    email: <email()>
 
   # TEAM LEADER ACCOUNTS:
   teamleader:
@@ -12,18 +14,24 @@ App\Entity\User:
     password: <encodePassword(@self, @self->username)>
     enabled: true
     roles: ['ROLE_TEAMLEADER']
+    phone: <e164PhoneNumber()>
+    email: <email()>
 
   teamleader_disabled:
     username: 'teamleader_disabled'
     password: <encodePassword(@self, @self->username)>
     enabled: true
     roles: ['ROLE_TEAMLEADER']
+    phone: <e164PhoneNumber()>
+    email: <email()>
 
   teamleader_random_{1..8}:
     username (unique): '<username()>'
     password: 'none'
     enabled: false
     roles: ['ROLE_TEAMLEADER']
+    phone: <e164PhoneNumber()>
+    email: <email()>
 
   # WORKER ACCOUNTS:
   worker:
@@ -31,18 +39,24 @@ App\Entity\User:
     password: <encodePassword(@self, @self->username)>
     enabled: true
     roles: ['ROLE_WORKER']
+    phone: <e164PhoneNumber()>
+    email: ''
 
   worker_disabled:
     username: 'worker_disabled'
     password: <encodePassword(@self, @self->username)>
     enabled: false
     roles: ['ROLE_WORKER']
+    phone: <e164PhoneNumber()>
+    email: <email()>
 
   worker_random{1..20}:
     username (unique): '<username()>'
     password: 'none'
     enabled: true
     roles: ['ROLE_WORKER']
+    phone: <e164PhoneNumber()>
+    email: ''
 
   # CUSTOMERS:
   customer:
@@ -50,76 +64,81 @@ App\Entity\User:
     password: <encodePassword(@self, @self->username)>
     enabled: true
     roles: ['ROLE_CUSTOMER']
+    phone: <e164PhoneNumber()>
+    email: <email()>
+    company: <company()>
 
   customer2:
     username: 'customer2'
     password: <encodePassword(@self, @self->username)>
     enabled: true
     roles: ['ROLE_CUSTOMER']
+    phone: <e164PhoneNumber()>
+    email: <email()>
+    company: <company()>
 
   customer3:
     username: 'customer3'
     password: <encodePassword(@self, @self->username)>
     enabled: true
     roles: ['ROLE_CUSTOMER']
+    phone: <e164PhoneNumber()>
+    email: <email()>
+    company: <company()>
 
   customer_disabled:
     username: 'customer_disabled'
     password: <encodePassword(@self, @self->username)>
     enabled: false
     roles: ['ROLE_CUSTOMER']
+    phone: <e164PhoneNumber()>
+    email: <email()>
+    company: <company()>
 
   customer_random_{1..8}:
     username (unique): '<username()>'
     password: 'none'
     enabled: true
     roles: ['ROLE_CUSTOMER']
-
-App\Entity\Company:
-
-  company_random_{@customer_random_*}:
-    name: <company()>
-    owner: <current()>
-
-  company:
-    name: 'Company Customer Enabled'
-    owner: '@customer'
-
-  company_disabled:
-    name: 'Company Customer Disabled'
-    owner: '@customer_disabled'
+    phone: <e164PhoneNumber()>
+    email: <email()>
+    company: <company()>
 
 App\Entity\SaleOrder:
 
   sale_order{1..15}:
-    date: <dateTime('now - 15days + <current()>days')>
-    company: '@company'
+    date: <dateTime()>
+    owner: '@customer'
     state: 0
-    startDateTime: <dateTime('now')>
+    startDateTime: <dateTime()>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
-    price: <numberBetween(100, 7000)>
+    price: <numberBetween(500, 1000)>
     description: <sentence()>
 
   sale_order_disabled{1..2}:
-    date: <dateTime('now')>
-    company: '@company_disabled'
+    date: <dateTime()>
+    owner: '@customer_disabled'
     state: 0
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
-    price: <numberBetween(100, 7000)>
+    price: <numberBetween(500, 1000)>
     description: <sentence()>
 
   sale_order_random{1..22}:
-    date: <dateTime('now')>
-    company: '@company_random_*'
+    date: <dateTime()>
+    owner: '@customer_random_*'
     state: 0
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
-    price: <numberBetween(100, 7000)>
+    price: <numberBetween(500, 1200)>
     description: <sentence()>
 
-App\Entity\ContainerLoadOrder:
+App\Entity\ContainerLoadReport:
 
-  cl_order_orange1:
-    saleOrder: '@sale_order1'
-    assignedTo: '@teamleader'
+  clr{1..20}:
+    saleOrder: '@sale_order_random<current()>'
+    # amountReceived: '@self->saleOrder'->price
+    amountReceived: <numberBetween(500, 1200)>
+    amountTip: <numberBetween(10, 50)>
+    workers: ['@worker_random*', '@worker_random*', '@worker_random*']
+     # teamleaderTip: 500

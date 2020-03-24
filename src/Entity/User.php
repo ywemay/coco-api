@@ -17,6 +17,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\EntityListeners("App\Doctrine\UserListener")
  * @UniqueEntity("username")
  * @ApiResource(
  *   normalizationContext={"groups"={"user:read"}},
@@ -57,10 +58,10 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  *     },
  *     itemOperations={
  *         "get"={
- *          "security"="is_granted('ROLE_ADMIN')"
+ *          "security"="is_granted('view', object)"
  *         },
  *         "put"={
- *          "security"="is_granted('ROLE_ADMIN')"
+ *          "security"="is_granted('edit', object)"
  *         },
  *         "delete"={
  *          "security"="is_granted('ROLE_ADMIN')"
@@ -118,10 +119,30 @@ class User implements UserInterface
     private $enabled;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Company", mappedBy="owner", orphanRemoval=true)
-     * @Groups({"user:read"})
+     * @ORM\Column(type="string", length=120, nullable=true)
+     * @Groups({"user:read", "user:write", "user:regcustomer"})
      */
     private $company;
+
+    /**
+     * @ORM\Column(type="string", length=20, nullable=true)
+     */
+    private $phone;
+
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $email;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\SaleOrder", mappedBy="owner", orphanRemoval=true, cascade={"persist"})
+     */
+    private $saleOrders;
+
+    public function __construct()
+    {
+        $this->saleOrders = new ArrayCollection();
+    }
 
     /**
      * @Groups({"saleorder:read", "user:read"})
@@ -267,25 +288,75 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    public function getCompany(): ?Company
+    public function __toString(): string
+    {
+      return $this->getUsername();
+    }
+
+    public function getCompany(): ?string
     {
         return $this->company;
     }
 
-    public function setCompany(Company $company): self
+    public function setCompany(?string $company): self
     {
         $this->company = $company;
 
-        // set the owning side of the relation if necessary
-        if ($company->getOwner() !== $this) {
-            $company->setOwner($this);
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SaleOrder[]
+     */
+    public function getSaleOrders(): Collection
+    {
+        return $this->saleOrders;
+    }
+
+    public function addSaleOrder(SaleOrder $saleOrder): self
+    {
+        if (!$this->saleOrders->contains($saleOrder)) {
+            $this->saleOrders[] = $saleOrder;
+            $saleOrder->setOwner($this);
         }
 
         return $this;
     }
 
-    public function __toString(): string
+    public function removeSaleOrder(SaleOrder $saleOrder): self
     {
-      return $this->getUsername();
+        if ($this->saleOrders->contains($saleOrder)) {
+            $this->saleOrders->removeElement($saleOrder);
+            // set the owning side to null (unless already changed)
+            if ($saleOrder->getOwner() === $this) {
+                $saleOrder->setOwner(null);
+            }
+        }
+
+        return $this;
     }
 }
