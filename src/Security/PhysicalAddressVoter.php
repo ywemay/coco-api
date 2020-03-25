@@ -1,12 +1,12 @@
 <?php
 namespace App\Security;
 
-use App\Entity\SaleOrder;
+use App\Entity\PhysicalAddress;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class SaleOrderVoter extends Voter
+class PhysicalAddressVoter extends Voter
 {
     // these strings are just invented: you can use anything
     const VIEW = 'view';
@@ -15,13 +15,11 @@ class SaleOrderVoter extends Voter
 
     protected function supports($attribute, $subject)
     {
-        // if the attribute isn't one we support, return false
         if (!in_array($attribute, [self::VIEW, self::EDIT, self::DELETE])) {
             return false;
         }
 
-        // only vote on SaleOrder objects inside this voter
-        if (!$subject instanceof SaleOrder) {
+        if (!$subject instanceof PhysicalAddress) {
             return false;
         }
 
@@ -48,17 +46,17 @@ class SaleOrderVoter extends Voter
         throw new \LogicException('This code should not be reached!');
     }
 
-    private function canEdit(SaleOrder $subject, User $user)
+    private function canEdit(PhysicalAddress $subject, User $user)
     {
-        if ($subject->getState() > 0) {
+        if ($subject->getLocked()) {
           return false;
         }
         return $user === $subject->getOwner();
     }
 
-    private function canDelete(SaleOrder $subject, User $user)
+    private function canDelete(PhysicalAddress $subject, User $user)
     {
-        if ($subject->getState() > 0) {
+        if ($subject->getLocked()) {
           return false;
         }
         return $user === $subject->getOwner();

@@ -4,7 +4,7 @@ namespace App\Tests;
 
 use App\Tests\ApiJWTTestCase;
 use App\Entity\SaleOrder;
-use App\Entity\Company;
+use App\Entity\PhysicalAddress;
 use App\Entity\User;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 
@@ -51,9 +51,12 @@ class SaleOrdersTest extends ApiJWTTestCase
 
   private function getCreateJson($username)
   {
+    $uiri = $this->findIriBy(User::class, ['username' => 'customer']);
+    $address_iri = $this->findIriBy(PhysicalAddress::class, ['owner' => $uiri]);
     $json = [
       'date'=> date('Y-m-d'),
       'state' => 0,
+      'address' => $address_iri,
       'containerType' => '20FT',
       'startDateTime' => date('Y-m-d H:i'),
       'price' => 700,

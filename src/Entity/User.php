@@ -138,9 +138,15 @@ class User implements UserInterface
      */
     private $saleOrders;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PhysicalAddress", mappedBy="owner", orphanRemoval=true)
+     */
+    private $physicalAddresses;
+
     public function __construct()
     {
         $this->saleOrders = new ArrayCollection();
+        $this->physicalAddresses = new ArrayCollection();
     }
 
     /**
@@ -353,6 +359,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($saleOrder->getOwner() === $this) {
                 $saleOrder->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PhysicalAddress[]
+     */
+    public function getPhysicalAddresses(): Collection
+    {
+        return $this->physicalAddresses;
+    }
+
+    public function addPhysicalAddress(PhysicalAddress $physicalAddress): self
+    {
+        if (!$this->physicalAddresses->contains($physicalAddress)) {
+            $this->physicalAddresses[] = $physicalAddress;
+            $physicalAddress->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhysicalAddress(PhysicalAddress $physicalAddress): self
+    {
+        if ($this->physicalAddresses->contains($physicalAddress)) {
+            $this->physicalAddresses->removeElement($physicalAddress);
+            // set the owning side to null (unless already changed)
+            if ($physicalAddress->getOwner() === $this) {
+                $physicalAddress->setOwner(null);
             }
         }
 

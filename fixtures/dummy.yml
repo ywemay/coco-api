@@ -68,17 +68,8 @@ App\Entity\User:
     email: <email()>
     company: <company()>
 
-  customer2:
-    username: 'customer2'
-    password: <encodePassword(@self, @self->username)>
-    enabled: true
-    roles: ['ROLE_CUSTOMER']
-    phone: <e164PhoneNumber()>
-    email: <email()>
-    company: <company()>
-
-  customer3:
-    username: 'customer3'
+  customer{2..3}:
+    username: 'customer<current()>'
     password: <encodePassword(@self, @self->username)>
     enabled: true
     roles: ['ROLE_CUSTOMER']
@@ -104,11 +95,49 @@ App\Entity\User:
     email: <email()>
     company: <company()>
 
+App\Entity\PhysicalAddress:
+
+  add_customer{1..3}:
+    owner: '@customer'
+    province: 'Zhejiang'
+    city: <city()>
+    street: <streetName()>
+    address: <streetAddress()>
+
+  add_customer2:
+    owner: '@customer2'
+    province: 'Zhejiang'
+    city: <city()>
+    street: <streetName()>
+    address: <streetAddress()>
+
+  add_customer_disabled:
+    owner: '@customer'
+    province: 'Zhejiang'
+    city: <city()>
+    street: <streetName()>
+    address: <streetAddress()>
+
+  add_customer_random{1..8}:
+    owner: '@customer_random_<current()>'
+    province: 'Zhejiang'
+    city: <city()>
+    street: <streetName()>
+    address: <streetAddress()>
+
+  add_customer_random2{1..3}:
+    owner: '@customer_random_<current()>'
+    province: 'Zhejiang'
+    city: <city()>
+    street: <streetName()>
+    address: <streetAddress()>
+
 App\Entity\SaleOrder:
 
   sale_order{1..10}:
     date: <dateTime()>
     owner: '@customer'
+    address: '@add_customer<numberBetween(1,3)>'
     state: 0
     startDateTime: <dateTime()>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
@@ -118,6 +147,7 @@ App\Entity\SaleOrder:
   sale_order{1..5}:
     date: <dateTime()>
     owner: '@customer'
+    address: '@add_customer<numberBetween(1,3)>'
     assignedTo: '@teamleader'
     state: 0
     startDateTime: <dateTime()>
@@ -128,15 +158,39 @@ App\Entity\SaleOrder:
   sale_order_disabled{1..2}:
     date: <dateTime()>
     owner: '@customer_disabled'
+    address: '@add_customer_disabled'
     state: 0
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
     price: <numberBetween(500, 1000)>
     description: <sentence()>
 
-  sale_order_random{1..22}:
+  sale_order_random{1..8}:
     date: <dateTime()>
-    owner: '@customer_random_*'
+    owner: '@customer_random_<current()>'
+    address: '@add_customer_random<current()>'
+    assignedTo: '@teamleader_random_*'
+    state: 0
+    startDateTime: <dateTime('now')>
+    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+    price: <numberBetween(500, 1200)>
+    description: <sentence()>
+
+  sale_order_random2{1..8}:
+    date: <dateTime()>
+    owner: '@customer_random_<current()>'
+    address: '@add_customer_random<current()>'
+    assignedTo: '@teamleader_random_*'
+    state: 0
+    startDateTime: <dateTime('now')>
+    containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
+    price: <numberBetween(500, 1200)>
+    description: <sentence()>
+
+  sale_order_random3{1..6}:
+    date: <dateTime()>
+    owner: '@customer_random_<current()>'
+    address: '@add_customer_random<current()>'
     assignedTo: '@teamleader_random_*'
     state: 0
     startDateTime: <dateTime('now')>
@@ -154,7 +208,7 @@ App\Entity\ContainerLoadReport:
     workers: ['@worker_random*', '@worker_random*', '@worker_random*']
      # teamleaderTip: 500
 
-  clr{1..20}:
+  clr{1..8}:
     saleOrder: '@sale_order_random<current()>'
     # amountReceived: '@self->saleOrder'->price
     amountReceived: <numberBetween(500, 1200)>

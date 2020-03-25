@@ -117,6 +117,13 @@ class SaleOrder
     private $owner;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\PhysicalAddress")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"saleorder:read", "saleorder:write"})
+     */
+    private $address;
+
+    /**
      * @ORM\PrePersist
      */
     public function initDataOnPrePersists()
@@ -249,6 +256,18 @@ class SaleOrder
     public function setOwner(?User $owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getAddress(): ?PhysicalAddress
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?PhysicalAddress $address): self
+    {
+        $this->address = $address;
 
         return $this;
     }
