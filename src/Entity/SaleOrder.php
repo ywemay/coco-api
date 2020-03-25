@@ -113,7 +113,6 @@ class SaleOrder
      * @Groups({"saleorder:read", "admin:write"})
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="saleOrders", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
-     * @Assert\NotNull
      */
     private $owner;
 

@@ -20,25 +20,26 @@ class UserListener
       $this->requestStack = $requestStack;
     }
 
-    public function prePersist(User $user)
+    public function prePersist(User $data)
     {
-      if ($user->getPlainPassword()) {
-          $user->setPassword(
-              $this->userPasswordEncoder->encodePassword($user, $user->getPlainPassword())
+      if ($data->getPlainPassword()) {
+          $data->setPassword(
+              $this->userPasswordEncoder->encodePassword($data, $data->getPlainPassword())
           );
-          $user->eraseCredentials();
+          $data->eraseCredentials();
       }
 
       $request = $this->requestStack->getCurrentRequest();
       $route = $request ? $request->attributes->get('_route') : '';
       if ($route == 'api_users_regcustomer_collection') {
-        $user->setRoles(['ROLE_USER', 'ROLE_CUSTOMER']);
+        $data->setRoles(['ROLE_USER', 'ROLE_CUSTOMER']);
       }
       elseif ($route == 'api_users_regteamleader_collection') {
-        $user->setRoles(['ROLE_USER', 'ROLE_TEAMLEADER']);
+        $data->setRoles(['ROLE_USER', 'ROLE_TEAMLEADER']);
       }
       elseif ($route == 'api_users_regworker_collection') {
-        $user->setRoles(['ROLE_USER', 'ROLE_WORKER']);
+        $data->setRoles(['ROLE_USER', 'ROLE_WORKER']);
       }
+      // print_r($data);
     }
 }

@@ -69,8 +69,7 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
     $rootAlias = $queryBuilder->getRootAliases()[0];
     if ($this->security->isGranted('ROLE_CUSTOMER')) {
       $user = $this->security->getUser();
-      $queryBuilder->join("App\Entity\Company", 'c', 'WITH', $rootAlias.'.company = c.id');
-      $queryBuilder->andWhere('c.owner = :uid');
+      $queryBuilder->andWhere($rootAlias . '.owner = :uid');
       $queryBuilder->setParameter('uid', $user->getId());
     }
   }

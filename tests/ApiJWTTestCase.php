@@ -16,6 +16,7 @@ class ApiJWTTestCase extends ApiTestCase
     const CUSTOMER = 'customer';
 
     private $iri = '';
+    private $returnClient = false;
 
     private $credentials = array(
       'username' => 'admin',
@@ -66,11 +67,19 @@ class ApiJWTTestCase extends ApiTestCase
 
     public function userRequest($username, $method = 'GET', $iri = FALSE, $params = [], $options = [])
     {
+      $returnArray = false;
+      if (is_array($method)) {
+        $method = $method[0];
+        $returnArray = true;
+      }
       if (!$iri) $iri = $this->iri;
       $client = $username
         ? $this->getAuthenticatedClient($username)
         : static::createClient();
-      return $client->request($method, $iri, $params, $options);
+
+      $resp = $client->request($method, $iri, $params, $options);
+      if ($returnArray) return [$resp, $client];
+      return $resp;
     }
 
     public function anonymousRequest($method = 'GET', $iri=false, $params = [], $options = [])

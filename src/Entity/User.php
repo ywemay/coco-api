@@ -83,7 +83,6 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank()
-     * @Assert\Unique()
      * @Groups({"user:write", "user:read", "user:regcustomer", "user:regteamleader", "user:regworker", "clorder:read"})
      */
     private $username;
