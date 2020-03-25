@@ -11,38 +11,46 @@ class UsersTest extends ApiJWTTestCase
   // This trait provided by HautelookAliceBundle will take care of refreshing the database content to a known state before each test
   use RefreshDatabaseTrait;
 
-  public function testGetUsersWithoutLoggingIn(): void
-  {
-    $client = static::createClient();
-    $response = $client->request('GET', '/api/users');
+  const REGISTER_URI = '/api/auth/register';
 
-    $this->assertSame(401, $response->getStatusCode());
+  protected function setUp()
+  {
+    $this->setIri('/api/users');
   }
 
+  public function testList(): void
+  {
+    $this->anonymousRequest();
+    $this->assertResponseStatusCodeSame(401);
+
+    $response = $this->customerRequest();
+    $this->assertResponseStatusCodeSame(403);
+
+    $response = $this->teamleaderRequest();
+    $this->assertResponseStatusCodeSame(200);
+    $this->assertSame(32, $response ? $response->toArray()['hydra:totalItems'] : '');
+
+    $this->workerRequest();
+    $this->assertResponseStatusCodeSame(403);
+
+    $response = $this->adminRequest();
+    $this->assertResponseStatusCodeSame(200);
+    $this->assertSame(45, $response->toArray()['hydra:totalItems']);
+  }
 
   public function testLogin(): void
   {
-    $response = static::createClient()->request('POST', '/api/auth/login', ['json' => [
-      'username' => 'admin',
-      'password' => 'admin',
-    ]]);
+    $this->getToken('worker');
+    $this->assertResponseStatusCodeSame(200);
+    $this->assertArrayHasKey('token', $response ? $response->toArray() : []);
 
-    $this->assertSame(200, $response->getStatusCode());
-    $this->assertArrayHasKey('token', $response->toArray());
-  }
-
-  public function testDisabledUserLogin(): void
-  {
-    $response = static::createClient()->request('POST', '/api/auth/login', ['json' => [
-      'username' => 'mihai',
-      'password' => 'mihai',
-    ]]);
+    $this->getToken('worker_disabled');
     $this->assertResponseStatusCodeSame(401);
   }
 
   public function testRegisterWorker(): void
   {
-    $response = static::createClient()->request('POST', '/api/auth/register/worker',
+    $response = static::createClient()->request('POST', self::REGISTER_URI . '/worker',
     ['json' => [
       'username' => 'dummywoker',
       'password' => 'dummyPass1',
@@ -53,7 +61,7 @@ class UsersTest extends ApiJWTTestCase
 
   public function testRegisterTeamLeader(): void
   {
-    $response = static::createClient()->request('POST', '/api/auth/register/teamleader',
+    $response = static::createClient()->request('POST', self::REGISTER_URI . '/teamleader',
     ['json' => [
       'username' => 'dummytl',
       'password' => 'dummyPass1',
@@ -64,7 +72,7 @@ class UsersTest extends ApiJWTTestCase
 
   public function testRegisterCustomer(): void
   {
-    $response = static::createClient()->request('POST', '/api/auth/register/customer',
+    $response = static::createClient()->request('POST', self::REGISTER_URI . '/customer',
     ['json' => [
       'username' => 'dummycustomer',
       'password' => 'dummyPass1',
@@ -73,14 +81,5 @@ class UsersTest extends ApiJWTTestCase
       'company' => 'Dummy Company'
     ]]);
     $this->assertResponseStatusCodeSame(201);
-  }
-
-  public function testTeamLeaderList(): void
-  {
-   $client = $this->getAuthenticatedClient('vasea');
-
-    $response = $client->request('GET', '/api/users');
-    $this->assertResponseStatusCodeSame(200);
-    $this->assertSame(11, $response->toArray()['hydra:totalItems']);
   }
 }

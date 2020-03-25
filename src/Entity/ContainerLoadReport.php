@@ -5,10 +5,40 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *   normalizationContext={"groups"={"clreport:read"}},
+ *   denormalizationContext={"groups"={"clreport:write"}},
+ *   attributes={
+ *     "security"="is_granted('ROLE_ADMIN') or is_granted('ROLE_CUSTOMER')",
+ *     "pagination_items_per_page"=30,
+ *   },
+ *   collectionOperations={
+ *     "get"={
+ *       "path"="/clreports"
+ *     },
+ *     "post"={"path"="/clreports"}
+ *   },
+ *   itemOperations={
+ *     "get"={
+ *       "path"="/clreports/{id}",
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('view', object)"
+ *     },
+ *     "put"={
+ *       "path"="/clreports/{id}",
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('edit', object)",
+ *       "denormalization_context"={"groups"={"clreport:write", "clreport:create"}}
+ *     },
+ *     "delete"={
+ *       "path"="/clreports/{id}",
+ *       "security"="is_granted('ROLE_ADMIN') or is_granted('delete', object)"
+ *       }
+ *   }
+ * )
  * @ORM\EntityListeners("App\Doctrine\ContainerLoadReportListener")
  * @ORM\Entity(repositoryClass="App\Repository\ContainerLoadReportRepository")
  */
@@ -23,52 +53,62 @@ class ContainerLoadReport
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"clreport:read"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"clreport:read", "clreport:write"})
      */
     private $amountReceived;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"clreport:read", "clreport:write", "clreport:create"})
      */
     private $amountTip;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User")
+     * @Groups({"clreport:read", "clreport:write", "clreport:create"})
      */
     private $workers;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"clreport:read"})
      */
     private $totalAmount;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"clreport:read"})
      */
     private $companyProfit;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"clreport:read"})
      */
     private $teamleaderTip;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"clreport:read"})
      */
     private $perWorkerAmount;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\SaleOrder", inversedBy="containerLoadReport", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"clreport:read", "clreport:write", "clreport:create"})
      */
     private $saleOrder;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"clreport:read"})
      */
     private $balance;
 

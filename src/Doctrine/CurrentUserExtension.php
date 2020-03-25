@@ -52,10 +52,10 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
   {
     $rootAlias = $queryBuilder->getRootAliases()[0];
     if ($this->security->isGranted('ROLE_TEAMLEADER')) {
-      $queryBuilder->andWhere(sprintf('%s.roles LIKE :role1', $rootAlias));
-      $queryBuilder->andWhere(sprintf('%s.roles LIKE :role2', $rootAlias));
+      $queryBuilder->andWhere(sprintf('%s.roles LIKE :role1 OR %s.roles LIKE :role2', $rootAlias, $rootAlias));
+      // $queryBuilder->andWhere(sprintf('%s.roles LIKE :role2', $rootAlias));
       $queryBuilder->setParameter('role1', '%"ROLE_WORKER"%');
-      $queryBuilder->setParameter('role2', '%"ROLE_WORKER"%');
+      $queryBuilder->setParameter('role2', '%"ROLE_TEAMLEADER"%');
     }
     else {
       $user = $this->security->getUser();
