@@ -56,6 +56,32 @@ See: [AliceBundle](https://github.com/hautelook/AliceBundle) and [alice fixtures
 
 See [Faker](https://github.com/fzaninotto/Faker) for fixtures data types.
 
+## Working with databases
+
+Drop, create, migrate and load fixtures shortcut for both local and test environments:
+
+```bash
+  ./bin/db -a
+```
+
+For details on script check:
+```bash
+  ./bin/db --help
+```
+## Testing
+
+Run all tests from `tests` directory:
+
+```bash
+  ./bin/phpunit
+```
+
+Run specific test:
+
+```bash
+  ./bin/phpunit tests/UsersTest.php --filter List
+```
+
 ## License
 
 This bundle is under the MIT license.  

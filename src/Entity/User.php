@@ -119,7 +119,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=120, nullable=true)
-     * @Groups({"user:read", "user:write", "user:regcustomer"})
+     * @Groups({"user:read", "saleorder:read", "user:write", "user:regcustomer"})
      */
     private $company;
 
