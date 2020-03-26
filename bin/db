@@ -1,0 +1,110 @@
+#!/bin/bash
+
+if [ ! -f ./bin/console ]; then
+  echo "Run this script in project root directory"
+  exit 1
+fi
+
+update_mode="local"
+fixtures=""
+fixtures_only="no"
+
+for ((i=1;i<=$#;i++));
+do
+    if [ ${!i} = "-a" ]; then
+      update_mode="both"
+      fixtures="load"
+    fi
+
+    if [ ${!i} = "--help" ]; then
+      echo "$0 - drop, create, make migrations and update database shortcut script."
+      echo ""
+      echo "  Options: "
+      echo "    -a|--all      Update all. Both local and test databases. Load fixtures."
+      echo "    --both        Affect both environments."
+      echo "    --env ENV     Update specified environment."
+      echo "    -d|--data     Load fixtures (data) after database refresh."
+      echo "    -f            Only load fixtures."
+      exit
+    fi
+
+    if [ ${!i} = "--all" ]; then
+      update_mode="both"
+      fixtures="load"
+    fi
+
+    if [ ${!i} = "--env" ]
+    then ((i++))
+        update_mode="${!i}";
+    fi
+
+    if [ ${!i} = "--both" ]; then
+       up_mode="both"
+    fi
+
+    if [ ${!i} = "--data" ]; then
+      fixtures="load"
+    fi
+
+    if [ ${!i} = "-d" ]; then
+      fixtures="load"
+    fi
+
+    if [ ${!i} = "-f" ]; then
+      fixtures_only="yes"
+      fixtures="load"
+    fi
+done;
+
+function doctrine_update_local {
+  if [ "$fixtures_only" = "no" ]; then
+    ./bin/console doctrine:database:drop --force
+    rm src/Migrations/Version*.php
+    ./bin/console doctrine:database:create
+    echo "Make migrations..."
+    ./bin/console make:migration
+    echo "Migrate local environment..."
+    ./bin/console doctrine:migrations:migrate -q
+  fi
+}
+
+function doctrine_update_test {
+  if [ "$fixtures_only" = "no" ]; then
+    ./bin/console doctrine:database:drop --force --env test
+    ./bin/console doctrine:database:create --env test
+    echo "Migrate test environment..."
+    ./bin/console doctrine:migrations:migrate --env test -q
+  fi
+}
+
+function hautelook_load {
+  echo "Load fixtures into local database..."
+  ./bin/console hautelook:fixtures:load -q
+}
+
+function hautelook_load_test {
+  echo "Load fixtures into test database..."
+  ./bin/console hautelook:fixtures:load --env test -q
+}
+
+if [ "$update_mode" = "local" ]; then
+  doctrine_update_local
+  if [ "${fixtures}" = "load" ]; then
+    hautelook_load
+  fi
+elif [ "$update_mode" = "test" ]; then
+  doctrine_update_test
+  if [ "$fixtures" = "load" ]; then
+    hautelook_load_test
+  fi
+elif [ "$update_mode" = "both" ]; then
+  echo "Clean both local and test databases..."
+  doctrine_update_local
+  doctrine_update_test
+  if [ "$fixtures" = "load" ]; then
+    hautelook_load
+    hautelook_load_test
+  fi
+else
+  echo "Unknown mode '$update_mode"
+fi

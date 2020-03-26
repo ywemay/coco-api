@@ -20,30 +20,19 @@ Container load business application backend.
 
 ## Set up
 
-Copy the `.env` to `.env.local`. Edit `.env.local` by specifying the [database url](https://symfony.com/doc/current/doctrine.html#configuring-the-database).
+Copy the `.env` to `.env.local`. Edit `.env.local` setting up database by specifying the [database url](https://symfony.com/doc/current/doctrine.html#configuring-the-database).
+
+Edit the `JWT_PASSPHRASE` and `CORS_ALLOW_ORIGIN` variables in `.env.local` file to suit your case.
+
+Run the setup script:
 
 ```bash
-  # Drop database if previously installed by
-  # ./bin/console doctrine:schema:drop
-
-  # Create database
-  ./bin/console doctrine:schema:create
-
-Generate the security keys:
-
-```bash
-    mkdir -p config/jwt
-    openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096
-    openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout
-
-    # for test env
-    openssl genpkey -out config/jwt/private.test.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096
-    openssl pkey -in config/jwt/private.test.pem -out config/jwt/public.test.pem -pubout
+  ./bin/setup
 ```
+The setup script will create local and test databases, make migrations for both databases,
+load fixtures and generate security keys.
 
-Edit the JWT_PASSPHRASE and CORS_ALLOW_ORIGIN variables in `.env.local` file to suit your case.
-
-See: [LexikJWTAuthenticationBundle](https://github.com/lexik/LexikJWTAuthenticationBundle).
+For security the system uses: [LexikJWTAuthenticationBundle](https://github.com/lexik/LexikJWTAuthenticationBundle).
 
 ## Run the server
 
@@ -58,7 +47,9 @@ See fixtures/dummy.yml for default declared records.
 One may append his own fixture files in the fixtures/ folder.
 
 ```bash
-  php bin/console hautelook:fixtures:load
+  ./bin/db -f
+  # for test environment:
+  ./bin/db -f --env test
 ```
 
 See: [AliceBundle](https://github.com/hautelook/AliceBundle) and [alice fixtures](https://github.com/nelmio/alice).

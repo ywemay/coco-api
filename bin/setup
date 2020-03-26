@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ ! -f ./bin/console ]; then
+  echo "Run this script in project root directory"
+  exit 1
+fi
+
+if [ ! -f ".env.local" ]; then
+  echo "Copy .env file to .env.local and configure database link in the file .env.local..."
+  exit 1
+fi
+
+echo "Create local database and apply migrations..."
+./bin/console doctrine:database:create
+./bin/console doctrine:migrations:migrate -q
+
+echo "Create local database and apply migrations..."
+./bin/console doctrine:database:create --env test
+./bin/console doctrine:migrations:migrate -q --env test
+
+echo "Load fixtures into local environment..."
+./bin/console hautelook:fixtures:load -q
+echo "Load fixtures into test environment..."
+./bin/console hautelook:fixtures:load -q --env test
+
+echo "Generate security keys for local environment..."
+./bin/genkeys
+echo "Generate security keys for test environment..."
+./bin/genkeys --env test
