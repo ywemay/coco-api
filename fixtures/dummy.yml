@@ -19,7 +19,7 @@ App\Entity\User:
 
   teamleader_disabled:
     username: 'teamleader_disabled'
-    password: <encodePassword(@self, @self->username)>
+    password: <encodePassword(@self, $username)>
     enabled: true
     roles: ['ROLE_TEAMLEADER']
     phone: <e164PhoneNumber()>
@@ -36,7 +36,7 @@ App\Entity\User:
   # WORKER ACCOUNTS:
   worker:
     username: 'worker'
-    password: <encodePassword(@self, @self->username)>
+    password: <encodePassword(@self, $username)>
     enabled: true
     roles: ['ROLE_WORKER']
     phone: <e164PhoneNumber()>
@@ -44,7 +44,7 @@ App\Entity\User:
 
   worker_disabled:
     username: 'worker_disabled'
-    password: <encodePassword(@self, @self->username)>
+    password: ''
     enabled: false
     roles: ['ROLE_WORKER']
     phone: <e164PhoneNumber()>
@@ -61,30 +61,27 @@ App\Entity\User:
   # CUSTOMERS:
   customer:
     username: 'customer'
-    password: <encodePassword(@self, @self->username)>
+    password: <encodePassword(@self, $username)>
     enabled: true
     roles: ['ROLE_CUSTOMER']
     phone: <e164PhoneNumber()>
     email: <email()>
-    company: <company()>
 
   customer{2..3}:
     username: 'customer<current()>'
-    password: <encodePassword(@self, @self->username)>
+    password: <encodePassword(@self, $username)>
     enabled: true
     roles: ['ROLE_CUSTOMER']
     phone: <e164PhoneNumber()>
     email: <email()>
-    company: <company()>
 
   customer_disabled:
     username: 'customer_disabled'
-    password: <encodePassword(@self, @self->username)>
+    password: <encodePassword(@self, $username)>
     enabled: false
     roles: ['ROLE_CUSTOMER']
     phone: <e164PhoneNumber()>
     email: <email()>
-    company: <company()>
 
   customer_random_{1..8}:
     username (unique): '<username()>'
@@ -93,40 +90,69 @@ App\Entity\User:
     roles: ['ROLE_CUSTOMER']
     phone: <e164PhoneNumber()>
     email: <email()>
-    company: <company()>
+
+App\Entity\CustomerProfile:
+
+  profile_customer:
+    company (unique): <company()>
+    phones: [<e164PhoneNumber()>]
+    emails: [<email()>]
+    webpage: <url()>
+    staff: ['@customer']
+
+  profile_customer2:
+    company (unique): <company()>
+    phones: [<e164PhoneNumber()>, <e164PhoneNumber()>]
+    emails: [<email()>, <email()>]
+    webpage: <url()>
+    staff: ['@customer3', '@customer2']
+
+  profile_customer_disabled:
+    company (unique): <company()>
+    phones: [<e164PhoneNumber()>]
+    emails: [<email()>]
+    webpage: <url()>
+    staff: ['@customer_disabled']
+
+  profile_customer_{1..8}:
+    company (unique): <company()>
+    phones: [<e164PhoneNumber()>]
+    emails: [<email()>]
+    webpage: <url()>
+    staff: ['@customer_random_<current()>']
 
 App\Entity\PhysicalAddress:
 
   add_customer{1..3}:
-    owner: '@customer'
+    customerProfile: '@profile_customer'
     province: 'Zhejiang'
     city: <city()>
     street: <streetName()>
     address: <streetAddress()>
 
   add_customer2:
-    owner: '@customer2'
+    customerProfile: '@profile_customer2'
     province: 'Zhejiang'
     city: <city()>
     street: <streetName()>
     address: <streetAddress()>
 
   add_customer_disabled:
-    owner: '@customer'
+    customerProfile: '@profile_customer_disabled'
     province: 'Zhejiang'
     city: <city()>
     street: <streetName()>
     address: <streetAddress()>
 
   add_customer_random{1..8}:
-    owner: '@customer_random_<current()>'
+    customerProfile: '@profile_customer_<current()>'
     province: 'Zhejiang'
     city: <city()>
     street: <streetName()>
     address: <streetAddress()>
 
   add_customer_random2{1..3}:
-    owner: '@customer_random_<current()>'
+    customerProfile: '@profile_customer_<current()>'
     province: 'Zhejiang'
     city: <city()>
     street: <streetName()>
@@ -138,6 +164,7 @@ App\Entity\SaleOrder:
     date: <dateTime()>
     owner: '@customer'
     address: '@add_customer<numberBetween(1,3)>'
+    customer: '<addressToCustomer($address)>'
     state: 0
     startDateTime: <dateTime()>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
@@ -148,6 +175,7 @@ App\Entity\SaleOrder:
     date: <dateTime()>
     owner: '@customer'
     address: '@add_customer<numberBetween(1,3)>'
+    customer: '<addressToCustomer($address)>'
     assignedTo: '@teamleader'
     state: 0
     startDateTime: <dateTime()>
@@ -159,6 +187,7 @@ App\Entity\SaleOrder:
     date: <dateTime()>
     owner: '@customer_disabled'
     address: '@add_customer_disabled'
+    customer: '<addressToCustomer($address)>'
     state: 0
     startDateTime: <dateTime('now')>
     containerType: <randomElement(['20FT', 'HQ', 'OTHER'])>
@@ -169,6 +198,7 @@ App\Entity\SaleOrder:
     date: <dateTime()>
     owner: '@customer_random_<current()>'
     address: '@add_customer_random<current()>'
+    customer: '<addressToCustomer($address)>'
     assignedTo: '@teamleader_random_*'
     state: 0
     startDateTime: <dateTime('now')>
@@ -180,6 +210,7 @@ App\Entity\SaleOrder:
     date: <dateTime()>
     owner: '@customer_random_<current()>'
     address: '@add_customer_random<current()>'
+    customer: '<addressToCustomer($address)>'
     assignedTo: '@teamleader_random_*'
     state: 0
     startDateTime: <dateTime('now')>
@@ -191,6 +222,7 @@ App\Entity\SaleOrder:
     date: <dateTime()>
     owner: '@customer_random_<current()>'
     address: '@add_customer_random<current()>'
+    customer: '<addressToCustomer($address)>'
     assignedTo: '@teamleader_random_*'
     state: 0
     startDateTime: <dateTime('now')>

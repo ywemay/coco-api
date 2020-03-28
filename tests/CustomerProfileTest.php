@@ -3,13 +3,12 @@
 namespace App\Tests;
 
 use App\Tests\ApiJWTTestCase;
-use App\Entity\SaleOrder;
 use App\Entity\CustomerProfile;
 use App\Entity\PhysicalAddress;
 use App\Entity\User;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 
-class SaleOrdersTest extends ApiJWTTestCase
+class CustomerProfileTest extends ApiJWTTestCase
 {
   use RefreshDatabaseTrait;
 
@@ -17,7 +16,7 @@ class SaleOrdersTest extends ApiJWTTestCase
 
   protected function setUp()
   {
-    $this->setIri('/api/orders');
+    $this->setIri('/api/customer_profiles');
     $this->anonymousRequest();
     $this->em = self::$container->get('doctrine.orm.entity_manager');
   }
@@ -28,8 +27,7 @@ class SaleOrdersTest extends ApiJWTTestCase
     $this->assertResponseStatusCodeSame(401);
 
     $response = $this->customerRequest();
-    $this->assertResponseStatusCodeSame(200);
-    $this->assertSame(10, $response->toArray()['hydra:totalItems']);
+    $this->assertResponseStatusCodeSame(403);
 
     $this->teamleaderRequest();
     $this->assertResponseStatusCodeSame(403);
@@ -39,50 +37,37 @@ class SaleOrdersTest extends ApiJWTTestCase
 
     $response = $this->adminRequest();
     $this->assertResponseStatusCodeSame(200);
-    $this->assertSame(34, $response->toArray()['hydra:totalItems']);
+    $this->assertSame(11, $response->toArray()['hydra:totalItems']);
   }
 
   public function testCreate(): void
   {
-    $this->createOrder('customer');
+    $this->createItem('customer3');
     $this->assertResponseStatusCodeSame(201);
-    $this->createOrder('admin');
+    $this->createItem('admin');
     $this->assertResponseStatusCodeSame(201);
-    $this->createOrder('worker');
+    $this->createItem('worker');
     $this->assertResponseStatusCodeSame(403);
-    $this->createOrder('teamleader');
+    $this->createItem('teamleader');
     $this->assertResponseStatusCodeSame(403);
   }
 
   private function getCreateJson($username)
   {
-    $u = $this->em->getRepository(User::class)->findOneBy(['username' => 'customer']);
-    $profile=$this->em->getRepository(CustomerProfile::class)->find($u->getCustomerProfile()->getId());
-    $address=$this->em->getRepository(PhysicalAddress::class)->findOneBy([
-      'customerProfile' => $profile->getId()]);
+    $u = $this->em->getRepository(User::class)->findOneBy(['username' => 'customer3']);
 
     $json = [
-      'date'=> date('Y-m-d'),
-      'state' => 0,
-      'customer' => '/api/customer_profiles/' . $profile->getId(),
-      'address' => '/api/address/' . $address->getId(),
-      'containerType' => '20FT',
-      'startDateTime' => date('Y-m-d H:i'),
-      'price' => 700,
-      'description' => 'This is a test record created by ' . $username
+      'company' => 'Company Name LTD',
+      'phones' => ['123412098347', '102384021934'],
+      'emails' => ['some@email.loc'],
+      'webpage' => 'https://www.somepage.loc',
+      'staff' => ['/api/users/' . $u->getId()]
     ];
-
-    if ($username == 'admin') {
-      $json['owner'] = static::findIriBy(User::class,
-        ['username' => 'customer']);
-      $json['assignedTo'] = static::findIriBy(User::class,
-        ['username' => 'teamleader']);
-    }
 
     return $json;
   }
 
-  private function createOrder($username) {
+  private function createItem($username) {
     $client = $this->getAuthenticatedClient($username);
     $json = $this->getCreateJson($username);
     return $client->request('POST', $this->getIri(), ['json' => $json]);

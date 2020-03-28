@@ -48,13 +48,6 @@ class PhysicalAddress
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="physicalAddresses")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"admin:read", "admin:input"})
-     */
-    private $owner;
-
-    /**
      * @ORM\Column(type="string", length=15)
      * @Groups({"address:read", "address:write"})
      */
@@ -91,6 +84,11 @@ class PhysicalAddress
     private $lg;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\CustomerProfile", inversedBy="physicalAddresses")
+     */
+    private $customerProfile;
+
+    /**
      * If locked - cannot be edited - has sale orders pointing to it
      * @ORM\Column(type="boolean")
      */
@@ -99,18 +97,6 @@ class PhysicalAddress
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getOwner(): ?User
-    {
-        return $this->owner;
-    }
-
-    public function setOwner(?User $owner): self
-    {
-        $this->owner = $owner;
-
-        return $this;
     }
 
     public function getProvince(): ?string
@@ -195,5 +181,17 @@ class PhysicalAddress
         $this->locked = $locked;
 
         return $this;
+    }
+
+    public function getCustomerProfile(): ?CustomerProfile
+    {
+      return $this->customerProfile;
+    }
+
+    public function setCustomerProfile(CustomerProfile $customerProfile): self
+    {
+      $this->customerProfile = $customerProfile;
+
+      return $this;
     }
 }

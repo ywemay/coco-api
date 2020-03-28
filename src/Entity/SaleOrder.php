@@ -111,7 +111,7 @@ class SaleOrder
 
     /**
      * @Groups({"saleorder:read", "admin:write"})
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="saleOrders", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $owner;
@@ -122,6 +122,13 @@ class SaleOrder
      * @Groups({"saleorder:read", "saleorder:write"})
      */
     private $address;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\CustomerProfile")
+     * @ORM\JoinColumn(nullable=false)
+     * @Groups({"saleorder:read", "admin:write"})
+     */
+    private $customer;
 
     /**
      * @ORM\PrePersist
@@ -268,6 +275,18 @@ class SaleOrder
     public function setAddress(?PhysicalAddress $address): self
     {
         $this->address = $address;
+
+        return $this;
+    }
+
+    public function getCustomer(): ?CustomerProfile
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?CustomerProfile $customer): self
+    {
+        $this->customer = $customer;
 
         return $this;
     }

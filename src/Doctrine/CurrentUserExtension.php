@@ -8,6 +8,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use App\Entity\User;
 use App\Entity\SaleOrder;
+use App\Entity\CustomerProfile;
 use App\Entity\ContainerLoadOrder;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Security;
@@ -45,6 +46,9 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
     elseif (ContainerLoadOrder::class == $resourceClass) {
       $this->addContainerLoadOrderRelatedWhere($queryBuilder);
     }
+    elseif (CustomerProfile::class == $resourceClass) {
+      $this->addCustomerProfileConditions($queryBuilder);
+    }
     return;
   }
 
@@ -81,6 +85,16 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
       $user = $this->security->getUser();
       $queryBuilder->andWhere($rootAlias . '.assignedTo = :uid');
       $queryBuilder->setParameter('uid', $user->getId());
+    }
+  }
+
+  private function addCustomerProfileConditions(QueryBuilder $queryBuilder): void
+  {
+    $rootAlias = $queryBuilder->getRootAliases()[0];
+    if ($this->security->isGranted('ROLE_CUSTOMER')) {
+      $user = $this->security->getUser();
+      $queryBuilder->andWhere($rootAlias . '.customerProfile = :pid');
+      $queryBuilder->setParameter('pid', $user->getCustomerProfile()->getId());
     }
   }
 }

@@ -22,6 +22,14 @@ class SaleOrderListener
     if (!$data->getOwner()) {
       $data->setOwner($this->security->getUser());
     }
+
+    if (!$data->getCustomer()) {
+      $user = $this->security->getUser();
+      if ($user) {
+        $data->setCustomer($user->getCustomerProfile());
+      }
+    }
+
     if (!$data->getAssignedTo() && $data->getState() == 1) {
       $data->setState(SaleOrder::FRESH);
     }

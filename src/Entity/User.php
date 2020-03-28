@@ -20,8 +20,8 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
  * @ORM\EntityListeners("App\Doctrine\UserListener")
  * @UniqueEntity("username")
  * @ApiResource(
- *   normalizationContext={"groups"={"user:read"}},
- *   denormalizationContext={"groups"={"user:write"}},
+ *     normalizationContext={"groups"={"user:read"}},
+ *     denormalizationContext={"groups"={"user:write"}},
  *     attributes={
  *      "security"="is_granted('ROLE_ADMIN')",
  *      "pagination_items_per_page"=30
@@ -118,12 +118,6 @@ class User implements UserInterface
     private $enabled;
 
     /**
-     * @ORM\Column(type="string", length=120, nullable=true)
-     * @Groups({"user:read", "saleorder:read", "user:write", "user:regcustomer"})
-     */
-    private $company;
-
-    /**
      * @ORM\Column(type="string", length=20, nullable=true)
      */
     private $phone;
@@ -134,20 +128,10 @@ class User implements UserInterface
     private $email;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\SaleOrder", mappedBy="owner", orphanRemoval=true, cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\CustomerProfile", inversedBy="staff")
+     * @ORM\JoinColumn(name="customer_profile_id", referencedColumnName="id")
      */
-    private $saleOrders;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PhysicalAddress", mappedBy="owner", orphanRemoval=true)
-     */
-    private $physicalAddresses;
-
-    public function __construct()
-    {
-        $this->saleOrders = new ArrayCollection();
-        $this->physicalAddresses = new ArrayCollection();
-    }
+    private $customerProfile;
 
     /**
      * @Groups({"saleorder:read", "user:read"})
@@ -298,18 +282,6 @@ class User implements UserInterface
       return $this->getUsername();
     }
 
-    public function getCompany(): ?string
-    {
-        return $this->company;
-    }
-
-    public function setCompany(?string $company): self
-    {
-        $this->company = $company;
-
-        return $this;
-    }
-
     public function getPhone(): ?string
     {
         return $this->phone;
@@ -334,65 +306,15 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|SaleOrder[]
-     */
-    public function getSaleOrders(): Collection
+    public function getCustomerProfile(): ?CustomerProfile
     {
-        return $this->saleOrders;
+      return $this->customerProfile;
     }
 
-    public function addSaleOrder(SaleOrder $saleOrder): self
+    public function setCustomerProfile(CustomerProfile $customerProfile): self
     {
-        if (!$this->saleOrders->contains($saleOrder)) {
-            $this->saleOrders[] = $saleOrder;
-            $saleOrder->setOwner($this);
-        }
+      $this->customerProfile = $customerProfile;
 
-        return $this;
-    }
-
-    public function removeSaleOrder(SaleOrder $saleOrder): self
-    {
-        if ($this->saleOrders->contains($saleOrder)) {
-            $this->saleOrders->removeElement($saleOrder);
-            // set the owning side to null (unless already changed)
-            if ($saleOrder->getOwner() === $this) {
-                $saleOrder->setOwner(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|PhysicalAddress[]
-     */
-    public function getPhysicalAddresses(): Collection
-    {
-        return $this->physicalAddresses;
-    }
-
-    public function addPhysicalAddress(PhysicalAddress $physicalAddress): self
-    {
-        if (!$this->physicalAddresses->contains($physicalAddress)) {
-            $this->physicalAddresses[] = $physicalAddress;
-            $physicalAddress->setOwner($this);
-        }
-
-        return $this;
-    }
-
-    public function removePhysicalAddress(PhysicalAddress $physicalAddress): self
-    {
-        if ($this->physicalAddresses->contains($physicalAddress)) {
-            $this->physicalAddresses->removeElement($physicalAddress);
-            // set the owning side to null (unless already changed)
-            if ($physicalAddress->getOwner() === $this) {
-                $physicalAddress->setOwner(null);
-            }
-        }
-
-        return $this;
+      return $this;
     }
 }
