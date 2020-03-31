@@ -10,6 +10,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\Security;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Annotation\ApiFilter;
 
 /**
  * @ApiResource(
@@ -42,6 +44,7 @@ use Symfony\Component\Security\Core\Security;
  * @ORM\Entity(repositoryClass="App\Repository\CustomerProfileRepository")
  * @UniqueEntity("company")
  * @ORM\HasLifecycleCallbacks
+ * @ApiFilter(SearchFilter::class, properties={"company" : "start", "phones" : "start", "emails": "start", "staff": "exact"})
  */
 class CustomerProfile
 {
@@ -55,6 +58,7 @@ class CustomerProfile
     /**
      * @ORM\Column(type="string", length=100)
      * @Groups({"customerprofile:read", "customerprofile:write"})
+     * @Assert\NotBlank
      */
     private $company;
 

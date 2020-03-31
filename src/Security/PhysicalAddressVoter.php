@@ -51,7 +51,7 @@ class PhysicalAddressVoter extends Voter
         if ($subject->getLocked()) {
           return false;
         }
-        return $user === $subject->getOwner();
+        return $user->getCustomerProfile() === $subject->getCustomerProfile();
     }
 
     private function canDelete(PhysicalAddress $subject, User $user)
@@ -59,6 +59,6 @@ class PhysicalAddressVoter extends Voter
         if ($subject->getLocked()) {
           return false;
         }
-        return $user === $subject->getOwner();
+        return $user->getCustomerProfile() === $subject->getCustomerProfile();
     }
 }

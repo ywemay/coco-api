@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Entity\SaleOrder;
 use App\Entity\CustomerProfile;
 use App\Entity\ContainerLoadOrder;
+use App\Entity\PhysicalAddress;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Security;
 
@@ -48,6 +49,9 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
     }
     elseif (CustomerProfile::class == $resourceClass) {
       $this->addCustomerProfileConditions($queryBuilder);
+    }
+    elseif (PhysicalAddress::class == $resourceClass) {
+      $this->addPhysicalAddressConditions($queryBuilder);
     }
     return;
   }
@@ -93,6 +97,17 @@ final class CurrentUserExtension implements QueryCollectionExtensionInterface, Q
     $rootAlias = $queryBuilder->getRootAliases()[0];
     if ($this->security->isGranted('ROLE_CUSTOMER')) {
       $user = $this->security->getUser();
+      $queryBuilder->andWhere($rootAlias . '.customerProfile = :pid');
+      $queryBuilder->setParameter('pid', $user->getCustomerProfile()->getId());
+    }
+  }
+
+  private function addPhysicalAddressConditions(QueryBuilder $queryBuilder): void
+  {
+    $rootAlias = $queryBuilder->getRootAliases()[0];
+    if ($this->security->isGranted('ROLE_CUSTOMER')) {
+      $user = $this->security->getUser();
+      $queryBuilder->join($rootAlias . '.customerProfile', 'p');
       $queryBuilder->andWhere($rootAlias . '.customerProfile = :pid');
       $queryBuilder->setParameter('pid', $user->getCustomerProfile()->getId());
     }

@@ -60,18 +60,21 @@ class ContainerLoadReport
     /**
      * @ORM\Column(type="integer")
      * @Groups({"clreport:read", "clreport:write"})
+     * @Assert\NotBlank
      */
     private $amountReceived;
 
     /**
      * @ORM\Column(type="integer")
      * @Groups({"clreport:read", "clreport:write", "clreport:create"})
+     * @Assert\NotBlank
      */
     private $amountTip;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\User")
      * @Groups({"clreport:read", "clreport:write", "clreport:create"})
+     * @Assert\NotBlank
      */
     private $workers;
 

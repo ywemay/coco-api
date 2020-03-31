@@ -76,6 +76,10 @@ class SaleOrder
     /**
      * @ORM\Column(type="string", length=6)
      * @Groups({"saleorderitem:read", "saleorderitem:write", "saleorder:read", "saleorder:write", "clorder:read"})
+     * @Assert\Regex(
+     *    pattern="/(20FT|HQ|OTHER)/",
+     *    message="Unknown container type"
+     * )
      */
     private $containerType;
 
@@ -88,6 +92,7 @@ class SaleOrder
     /**
      * @ORM\Column(type="integer", nullable=true)
      * @Groups({"saleorder:read", "admin:write"})
+     * @Assert\PositiveOrZero
      */
     private $price;
 

@@ -50,24 +50,28 @@ class PhysicalAddress
     /**
      * @ORM\Column(type="string", length=15)
      * @Groups({"address:read", "address:write"})
+     * @Assert\NotBlank
      */
     private $province;
 
     /**
      * @ORM\Column(type="string", length=30)
      * @Groups({"address:read", "address:write"})
+     * @Assert\NotBlank
      */
     private $city;
 
     /**
      * @ORM\Column(type="string", length=150)
      * @Groups({"address:read", "address:write"})
+     * @Assert\NotBlank
      */
     private $street;
 
     /**
      * @ORM\Column(type="string", length=150)
      * @Groups({"address:read", "address:write"})
+     * @Assert\NotBlank
      */
     private $address;
 
