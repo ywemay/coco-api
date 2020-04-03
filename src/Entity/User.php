@@ -77,13 +77,14 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"customerprofile:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank()
-     * @Groups({"user:write", "user:read", "user:regcustomer", "user:regteamleader", "user:regworker", "clorder:read"})
+     * @Groups({"user:write", "user:read", "user:regcustomer", "user:regteamleader", "user:regworker", "clorder:read", "customerprofile:read"})
      */
     private $username;
 
@@ -311,7 +312,7 @@ class User implements UserInterface
       return $this->customerProfile;
     }
 
-    public function setCustomerProfile(CustomerProfile $customerProfile): self
+    public function setCustomerProfile(?CustomerProfile $customerProfile): self
     {
       $this->customerProfile = $customerProfile;
 

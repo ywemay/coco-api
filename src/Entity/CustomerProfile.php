@@ -15,7 +15,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 
 /**
  * @ApiResource(
- *     normalizationContext={"groups"={"cstomerprofile:read"}},
+ *     normalizationContext={"groups"={"customerprofile:read"}},
  *     denormalizationContext={"groups"={"customerprofile:write"}},
  *     attributes={
  *      "security"="is_granted('ROLE_ADMIN')",
@@ -31,10 +31,10 @@ use ApiPlatform\Core\Annotation\ApiFilter;
  *     },
  *     itemOperations={
  *         "get"={
- *          "security"="is_granted('view', object)"
+ *          "security"="is_granted('ROLE_ADMIN') or is_granted('view', object)"
  *         },
  *         "put"={
- *          "security"="is_granted('edit', object)"
+ *          "security"="is_granted('ROLE_ADMIN') or is_granted('edit', object)"
  *         },
  *         "delete"={
  *          "security"="is_granted('ROLE_ADMIN')"
@@ -52,6 +52,7 @@ class CustomerProfile
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"customerprofile:read"})
      */
     private $id;
 
