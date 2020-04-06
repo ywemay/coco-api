@@ -130,7 +130,7 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\CustomerProfile", inversedBy="staff")
-     * @ORM\JoinColumn(name="customer_profile_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="customer_profile_id", referencedColumnName="id", onDelete="SET NULL")
      */
     private $customerProfile;
 

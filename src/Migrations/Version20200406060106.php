@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200327100953 extends AbstractMigration
+final class Version20200406060106 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -28,7 +28,7 @@ final class Version20200327100953 extends AbstractMigration
         $this->addSql('CREATE TABLE container_load_report (id INT AUTO_INCREMENT NOT NULL, sale_order_id INT DEFAULT NULL, created_at DATETIME NOT NULL, amount_received INT NOT NULL, amount_tip INT NOT NULL, total_amount INT NOT NULL, company_profit INT NOT NULL, teamleader_tip INT NOT NULL, per_worker_amount INT NOT NULL, balance INT NOT NULL, UNIQUE INDEX UNIQ_D17FE03093EB8192 (sale_order_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE container_load_report_user (container_load_report_id INT NOT NULL, user_id INT NOT NULL, INDEX IDX_606684DFDCEEBF30 (container_load_report_id), INDEX IDX_606684DFA76ED395 (user_id), PRIMARY KEY(container_load_report_id, user_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, customer_profile_id INT DEFAULT NULL, username VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, api_token VARCHAR(255) DEFAULT NULL, enabled TINYINT(1) NOT NULL, phone VARCHAR(20) DEFAULT NULL, email VARCHAR(50) DEFAULT NULL, UNIQUE INDEX UNIQ_8D93D649F85E0677 (username), UNIQUE INDEX UNIQ_8D93D6497BA2F5EB (api_token), INDEX IDX_8D93D6493133163A (customer_profile_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE physical_address ADD CONSTRAINT FK_19F6C7AC3133163A FOREIGN KEY (customer_profile_id) REFERENCES customer_profile (id)');
+        $this->addSql('ALTER TABLE physical_address ADD CONSTRAINT FK_19F6C7AC3133163A FOREIGN KEY (customer_profile_id) REFERENCES customer_profile (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE sale_order ADD CONSTRAINT FK_25F5CB1BF4BD7827 FOREIGN KEY (assigned_to_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE sale_order ADD CONSTRAINT FK_25F5CB1BDCEEBF30 FOREIGN KEY (container_load_report_id) REFERENCES container_load_report (id)');
         $this->addSql('ALTER TABLE sale_order ADD CONSTRAINT FK_25F5CB1B7E3C61F9 FOREIGN KEY (owner_id) REFERENCES user (id)');
@@ -37,7 +37,7 @@ final class Version20200327100953 extends AbstractMigration
         $this->addSql('ALTER TABLE container_load_report ADD CONSTRAINT FK_D17FE03093EB8192 FOREIGN KEY (sale_order_id) REFERENCES sale_order (id)');
         $this->addSql('ALTER TABLE container_load_report_user ADD CONSTRAINT FK_606684DFDCEEBF30 FOREIGN KEY (container_load_report_id) REFERENCES container_load_report (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE container_load_report_user ADD CONSTRAINT FK_606684DFA76ED395 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D6493133163A FOREIGN KEY (customer_profile_id) REFERENCES customer_profile (id)');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D6493133163A FOREIGN KEY (customer_profile_id) REFERENCES customer_profile (id) ON DELETE SET NULL');
     }
 
     public function down(Schema $schema) : void

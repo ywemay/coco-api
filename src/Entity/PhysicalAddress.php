@@ -88,7 +88,8 @@ class PhysicalAddress
     private $lg;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\CustomerProfile", inversedBy="physicalAddresses")
+     * @ORM\ManyToOne(targetEntity="App\Entity\CustomerProfile", inversedBy="physicalAddresses", cascade={"remove"})
+     * @ORM\JoinColumn(name="customer_profile_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $customerProfile;
 
