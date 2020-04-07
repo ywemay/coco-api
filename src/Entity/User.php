@@ -17,7 +17,7 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\EntityListeners("App\Doctrine\UserListener")
+ * @ORM\EntityListeners({"App\Doctrine\UserListener"})
  * @UniqueEntity("username")
  * @ApiResource(
  *     normalizationContext={"groups"={"user:read"}},
@@ -90,7 +90,6 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
-     * @Groups({"user:write", "user:read"})
      */
     private $roles = [];
 
@@ -175,12 +174,16 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
+    /**
+     * @Groups({"user:write"})
+     * @SerializedName("roles")
+     */
     public function setPlainRoles(array $roles)
     {
       $allow = ['admin', 'teamleader', 'worker', 'customer'];
       $rez = [];
       foreach ($roles as $value) {
-        if (!in_array($allow, $value)) continue;
+        if (!in_array($value, $allow)) continue;
         $rez[] = 'ROLE_' . mb_strtoupper($value);
       }
       return $this->setRoles($rez);
@@ -188,6 +191,7 @@ class User implements UserInterface
 
     /**
      * @Groups({"user:read"})
+     * @SerializedName("roles")
      */
     public function getPlainRoles(): array
     {

@@ -3,6 +3,8 @@
 namespace App\Doctrine;
 
 use App\Entity\User;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -20,14 +22,25 @@ class UserListener
       $this->requestStack = $requestStack;
     }
 
-    public function prePersist(User $data)
+    private function encodePassword(User $data)
     {
       if ($data->getPlainPassword()) {
           $data->setPassword(
               $this->userPasswordEncoder->encodePassword($data, $data->getPlainPassword())
           );
-          $data->eraseCredentials();
+          // $data->eraseCredentials();
       }
+    }
+
+    public function preUpdate(User $data, PreUpdateEventArgs $args)
+    {
+      // dd($user);
+      $this->encodePassword($data);
+    }
+
+    public function prePersist(User $data)
+    {
+      $this->encodePassword($data);
 
       $request = $this->requestStack->getCurrentRequest();
       $route = $request ? $request->attributes->get('_route') : '';
