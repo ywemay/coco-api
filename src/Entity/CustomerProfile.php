@@ -52,13 +52,13 @@ class CustomerProfile
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"customerprofile:read"})
+     * @Groups({"customerprofile:read", "saleorder:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=100)
-     * @Groups({"customerprofile:read", "customerprofile:write"})
+     * @Groups({"customerprofile:read", "saleorder:read", "customerprofile:write"})
      * @Assert\NotBlank
      */
     private $company;

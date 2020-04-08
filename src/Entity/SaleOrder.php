@@ -115,13 +115,6 @@ class SaleOrder
     private $containerLoadReport;
 
     /**
-     * @Groups({"saleorder:read", "admin:write"})
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $owner;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\PhysicalAddress")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"saleorder:read", "saleorder:write"})
@@ -256,18 +249,6 @@ class SaleOrder
         if ($containerLoadReport->getSaleOrder() !== $this) {
             $containerLoadReport->setSaleOrder($this);
         }
-
-        return $this;
-    }
-
-    public function getOwner(): ?User
-    {
-        return $this->owner;
-    }
-
-    public function setOwner(?User $owner): self
-    {
-        $this->owner = $owner;
 
         return $this;
     }

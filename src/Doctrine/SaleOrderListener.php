@@ -19,9 +19,6 @@ class SaleOrderListener
     if (!$data->getDate()) {
       $data->setDate(date('Y-m-d'));
     }
-    if (!$data->getOwner()) {
-      $data->setOwner($this->security->getUser());
-    }
 
     if (!$data->getCustomer()) {
       $user = $this->security->getUser();
